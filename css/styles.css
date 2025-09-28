@@ -1,0 +1,85 @@
+/* Custom styles for the website */
+
+/* Navigation styles */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Carousel styles */
+.carousel-item {
+    height: 500px;
+}
+
+.carousel-item img {
+    object-fit: cover;
+    height: 100%;
+}
+
+.carousel-caption {
+    background: rgba(0,0,0,0.5);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* News section styles */
+.news-section {
+    background-color: #f8f9fa;
+}
+
+.card {
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    color: #333;
+    font-weight: bold;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border: none;
+    padding: 8px 20px;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+}
+
+/* Footer styles */
+footer {
+    margin-top: 50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .carousel-item {
+        height: 300px;
+    }
+    
+    .carousel-caption {
+        padding: 10px;
+    }
+    
+    .carousel-caption h2 {
+        font-size: 1.5rem;
+    }
+    
+    .carousel-caption p {
+        font-size: 0.9rem;
+    }
+} 

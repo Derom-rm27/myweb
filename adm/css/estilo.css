@@ -1,0 +1,100 @@
+	/* Coded with love by Mutiullah Samim */
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			background: #60a3bc !important;
+		}
+		.user_card {
+			height: 450px;
+			width: 350px;
+			margin-top: auto;
+			margin-bottom: auto;
+			background: #f39c12;
+			position: relative;
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			padding: 10px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			border-radius: 5px;
+
+		}
+		.brand_logo_container {
+			position: absolute;
+			height: 170px;
+			width: 170px;
+			top: -75px;
+			border-radius: 50%;
+			background: #60a3bc;
+			padding: 10px;
+			text-align: center;
+		}
+		.brand_logo {
+			height: 150px;
+			width: 150px;
+			border-radius: 50%;
+			border: 2px solid white;
+		}
+		.form_container {
+			margin-top: 100px;
+		}
+		.login_btn {
+			width: 100%;
+			background: #c0392b !important;
+			color: white !important;
+		}
+		.login_btn:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+		.login_container {
+			padding: 0 2rem;
+		}
+		.input-group-text {
+			background: #c0392b !important;
+			color: white !important;
+			border: 0 !important;
+			border-radius: 0.25rem 0 0 0.25rem !important;
+		}
+		.input_user,
+		.input_pass:focus {
+			box-shadow: none !important;
+			outline: 0px !important;
+		}
+		.custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+			background-color: #c0392b !important;
+		}
+
+
+#ritual{border:medium none;color:#333;min-height:500px; padding:0px;width:auto; margin:0px;font-family:arial,sans-serif;}
+#ritual form{margin:0px; padding:0px;}
+#ritual form legend{font-size:11px; font-weight:bold;letter-spacing:1px;padding-bottom:5px;padding-top:5px;text-transform:capitalize;}
+#ritual label{display:block;font-size:11px;padding:10px 0 3px; font-weight:bold;}
+#ritual label span{padding-left:15px; color:#960103; font-size:10px;}
+#ritual select{font-family:Verdana, Geneva, sans-serif;
+	outline:none;border-radius: 3px;-moz-border-radius: 3px;-webkit-border-radius: 3px;}
+#ritual .texTitu{border:1px solid #999;color:#666;font-size:11px;height:20px;padding-bottom:0;padding-left:5px;padding-top:1px; padding-right:4px;font-family:Verdana, Geneva, sans-serif; font-weight:bold;
+	outline:none;border-radius: 4px;-moz-border-radius: 4px;-webkit-border-radius: 4px;}
+#ritual .texMenu{border:1px solid #999;color:#666;font-size:11px;height:20px;padding-bottom:0;padding-left:5px;padding-top:1px;width:470px;font-family:Verdana, Geneva, sans-serif;outline:none;border-radius: 4px;
+	-moz-border-radius: 4px;-webkit-border-radius: 4px;}
+#ritual .texDate{border:1px solid #999;color:#666;font-size:11px;height:20px;padding-bottom:0;padding-left:5px;padding-top:1px;width:78px;font-family:Verdana, Geneva, sans-serif;outline:none;border-radius: 4px;
+	-moz-border-radius: 4px;-webkit-border-radius: 4px;}
+#contenidos{width:670px;height:100%;border:1px solid #999;padding-bottom:0;padding-left:5px;padding-top:1px;font-size:12px;font-family:Times, serif;
+	border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;}
+#ritual .texDTex{background:url(../logo/calendario.png) no-repeat; width:20px; height:20px; border-style:none; margin-left:3px;cursor:pointer;outline:none;border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;}
+#ritual .texCor{border:1px solid #999;color:#666;font-size:11px;height:20px;padding-bottom:0;padding-left:5px;padding-top:1px; padding-right:4px;;font-family:Verdana, Geneva, sans-serif; font-weight:bold;outline:none;border-radius: 4px;-moz-border-radius: 4px;-webkit-border-radius: 4px;}
+#ritual .boton{width:100px;height:24px; cursor:pointer;background:#FF9016;border:2px solid #D9D9D9;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;}
+
+#progress{padding:0px;margin:0px;position:relative; width:120px; background:url(../logo/selec.png) no-repeat; border: 2px solid #FF9016; border-radius: 5px;-moz-border-radius: 5px;-webkit-border-radius: 5px;}
+#bar{ background:#FF9016; width:0%; height:18px; border-radius: 3px; }
+#percent{ position:absolute; color:#000; font-size:11px; font-weight:bold; display:inline-block; top:3px; left:48%; }
+#message{ display:inline;}
+#bar div.upload {width:120px;height:20px; padding:0px; margin:0px;overflow: hidden; cursor: pointer;}
+#bar div.upload input {display: inline-block !important;width: 120px !important;height: 20px !important;opacity: 0 !important;overflow: hidden !important;cursor: pointer;}
+#mensage{color:#C00; font-size:11px; font-weight:bold;}
