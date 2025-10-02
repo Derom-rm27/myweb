@@ -372,6 +372,68 @@ $cn->Close();
             pointer-events: none;
         }
 
+        .form-message {
+            min-height: 24px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 15px;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .form-message.error {
+            color: #ffb4b4;
+        }
+
+        .form-message.success {
+            color: #c8f7c5;
+        }
+
+        .captcha-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 10px 12px;
+            gap: 12px;
+        }
+
+        .captcha-group img {
+            flex: 1;
+            height: 44px;
+            border-radius: 10px;
+            background: #ffffff;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .refresh-captcha {
+            background: rgba(64, 196, 255, 0.2);
+            border: none;
+            color: #ffffff;
+            font-size: 20px;
+            width: 48px;
+            height: 44px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-captcha:hover {
+            background: rgba(64, 196, 255, 0.35);
+            transform: rotate(90deg);
+        }
+
+        .captcha-hint {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+
         .form-options {
             display: flex;
             justify-content: space-between;
@@ -635,17 +697,32 @@ $cn->Close();
             
             <h2 class="modal-title">Login</h2>
             
-            <form id="loginForm">
+            <form id="loginForm" action="adm/login.php" method="POST" autocomplete="off">
+                <div id="loginMessage" class="form-message" role="alert" aria-live="polite"></div>
+
                 <div class="form-group">
-                    <input type="email" class="form-input" placeholder="Email" required>
-                    <span class="input-icon">📧</span>
+                    <input type="text" class="form-input" name="users" placeholder="Usuario" required autocomplete="username">
+                    <span class="input-icon">👤</span>
                 </div>
-                
+
                 <div class="form-group">
-                    <input type="password" class="form-input" placeholder="Password" required>
+                    <input type="password" class="form-input" name="pass" placeholder="Contraseña" required autocomplete="current-password">
                     <span class="input-icon">🔒</span>
                 </div>
-                
+
+                <div class="form-group">
+                    <div class="captcha-group">
+                        <img src="adm/script/generax.php?img=true" alt="Captcha" id="captchaImage" data-base-src="adm/script/generax.php?img=true">
+                        <button type="button" class="refresh-captcha" id="refreshCaptcha" aria-label="Actualizar código de seguridad">⟳</button>
+                    </div>
+                    <span class="captcha-hint">Haz clic en la imagen o en el botón para actualizar el código.</span>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-input" name="clave" placeholder="Ingrese el código de seguridad" required autocomplete="off">
+                    <span class="input-icon">🔐</span>
+                </div>
+
                 <div class="form-options">
                     <label class="remember-me">
                         <input type="checkbox">
@@ -699,50 +776,96 @@ $cn->Close();
             }
         });
 
-        // Manejo del formulario
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = this.querySelector('input[type="email"]').value;
-            const password = this.querySelector('input[type="password"]').value;
-            const remember = this.querySelector('input[type="checkbox"]').checked;
-            const loginBtn = this.querySelector('.login-btn');
-            
-            // Mostrar estado de carga
-            loginBtn.textContent = 'Logging in...';
-            loginBtn.classList.add('loading');
-            loginBtn.disabled = true;
-            
-            // Aquí puedes agregar tu lógica de autenticación
-            // Por ejemplo, hacer una petición AJAX a tu script PHP
-            
-            // Simulación de proceso de login (reemplazar con tu lógica real)
-            setTimeout(() => {
-                // Ejemplo de validación simple
-                if (email && password) {
-                    // Aquí harías la petición a tu backend
-                    // fetch('adm/login_process.php', { ... })
-                    
-                    alert(`¡Login exitoso!\nEmail: ${email}\nRemember me: ${remember ? 'Sí' : 'No'}`);
-                    
-                    // Redirigir o actualizar estado de usuario
-                    // window.location.href = 'adm/dashboard.php';
-                } else {
-                    alert('Por favor, completa todos los campos');
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            const loginBtn = loginForm.querySelector('.login-btn');
+            const messageEl = document.getElementById('loginMessage');
+            const captchaImage = document.getElementById('captchaImage');
+            const refreshCaptchaBtn = document.getElementById('refreshCaptcha');
+            const originalButtonText = loginBtn ? loginBtn.textContent : '';
+
+            const setMessage = (text, type = 'error') => {
+                if (!messageEl) {
+                    return;
                 }
-                
-                // Restaurar botón
-                loginBtn.textContent = 'Login';
-                loginBtn.classList.remove('loading');
-                loginBtn.disabled = false;
-                
-                // Cerrar modal
-                closeLoginModal();
-                
-                // Limpiar formulario
-                this.reset();
-            }, 2000);
-        });
+
+                messageEl.textContent = text || '';
+                messageEl.classList.remove('error', 'success');
+
+                if (text && type) {
+                    messageEl.classList.add(type);
+                }
+            };
+
+            const refreshCaptcha = () => {
+                if (!captchaImage) {
+                    return;
+                }
+
+                const baseSrc = captchaImage.dataset.baseSrc || captchaImage.src;
+                const separator = baseSrc.includes('?') ? '&' : '?';
+                captchaImage.src = `${baseSrc}${separator}t=${Date.now()}`;
+            };
+
+            if (captchaImage) {
+                captchaImage.addEventListener('click', refreshCaptcha);
+            }
+
+            if (refreshCaptchaBtn) {
+                refreshCaptchaBtn.addEventListener('click', refreshCaptcha);
+            }
+
+            loginForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                if (!loginBtn) {
+                    return;
+                }
+
+                setMessage('', '');
+                loginBtn.textContent = 'Ingresando...';
+                loginBtn.classList.add('loading');
+                loginBtn.disabled = true;
+
+                try {
+                    const formData = new FormData(loginForm);
+                    formData.append('ajax', '1');
+
+                    const response = await fetch(loginForm.getAttribute('action') || 'adm/login.php', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Respuesta no válida del servidor.');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        setMessage('Acceso concedido. Redirigiendo...', 'success');
+                        const target = data.redirect && data.redirect.length > 0 ? data.redirect : 'adm/user.php';
+                        window.location.href = target;
+                        return;
+                    }
+
+                    refreshCaptcha();
+                    setMessage(data.message || 'No fue posible iniciar sesión.', 'error');
+                } catch (error) {
+                    refreshCaptcha();
+                    setMessage('Ocurrió un error al iniciar sesión. Intente nuevamente.', 'error');
+                    console.error(error);
+                } finally {
+                    loginBtn.textContent = originalButtonText || 'Login';
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                }
+            });
+        }
 
         // Funciones globales para usar desde otros lugares
         window.showLoginModal = openLoginModal;
