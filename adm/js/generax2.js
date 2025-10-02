@@ -7,17 +7,17 @@
 function iniciar(){
  var frm=window.document.sesion;
  var mensaje="<b style='font-size:14px;padding-right:7px;color:#900'>*</b>";
- if(frm.login.value==""){
-  mensaje=mensaje+"Ingrese el Nombre de Usuario";
-  frm.login.focus();
- }else if(frm.pass.value==""){
-  mensaje=mensaje+"Ingrese su contrase&ntilde;a";
-  frm.pass.focus();
+ if(frm.users.value==""){
+ mensaje=mensaje+"Ingrese el Nombre de Usuario";
+  frm.users.focus();
+}else if(frm.pass.value==""){
+ mensaje=mensaje+"Ingrese su contrase&ntilde;a";
+ frm.pass.focus();
  }else if(frm.clave.value==""){
   mensaje=mensaje+"Ingrese los Digitos de la Imagen";
   frm.clave.focus();
  }
- if((frm.login.value!="") && (frm.pass.value!="") && (frm.clave.value!="") ){return true;
+ if((frm.users.value!="") && (frm.pass.value!="") && (frm.clave.value!="") ){return true;
  }else{document.getElementById('mensaje').innerHTML = mensaje;return false;}
 }
 

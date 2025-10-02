@@ -24,7 +24,7 @@ if(isset($_GET['mensaje'])){
 	<title>Inicio de Sesion</title>
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/estilo.css">
-	<script language='JavaScript' type='text/javascript' src='js/generax.js'></script>
+        <script language='JavaScript' type='text/javascript' src='js/generax2.js'></script>
 	</head>
 	<!--Coded with love by Mutiullah Samim-->
 	<body>
