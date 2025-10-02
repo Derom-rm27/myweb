@@ -7,15 +7,16 @@
         //  E-MAIL : jcpintol@hotmail.com
         //========================================================================//
         function fnComprueba(){
-          if (isset($_POST['clave']) && $_POST['clave'] === "true") {
-                return 1;
-          }
-
-          if (!isset($_POST['clave'], $_SESSION['key'])) {
+          if (!isset($_POST['clave']) || !isset($_SESSION['key'])) {
                 return 0;
           }
 
-          $hash = md5($_POST['clave']);
+          $valor = strtolower(trim($_POST['clave']));
+          if ($valor === '') {
+                return 0;
+          }
+
+          $hash = md5($valor);
           if (function_exists('hash_equals')) {
                 return hash_equals($_SESSION['key'], $hash) ? 1 : 0;
           }
@@ -108,6 +109,8 @@
                 responder(false, 'Datos de imagen incorrectos.');
         }
 
+        unset($_SESSION['key']);
+
         $login = isset($_POST['users']) ? trim($_POST['users']) : '';
         $pass = isset($_POST['pass']) ? trim($_POST['pass']) : '';
 
@@ -117,24 +120,47 @@
 
         require_once("script/conex.php");
         $cn= new MySQLcn();
-        $loginDb = $cn->SecureInput($login);
-        $passDb = $cn->SecureInput($pass);
-        $querys ="CALL Acceder('$loginDb','$passDb');";
-        $cn->Query($querys);
-        $result = $cn->FetRows();
+        $link = $cn->GetLink();
 
-        if($result && isset($result[0]) && $result[0] != 'No Existe'){
-                session_regenerate_id(true);
-                $_SESSION["idUser"]=$result[0];
-                $_SESSION["idGrupo"]=$result[1];
-                $_SESSION["login"]=$result[3];
-                $_SESSION["nivel"]=$result[4];
-                $_SESSION["nombre"]=$result[2];
-                $_SESSION["hora"]=date("Y-n-j H:i:s");
+        $sql = "SELECT u.usersId, u.grupoId, u.nombres, u.users, u.nivel
+                 FROM usuarios u
+                 INNER JOIN grupos g ON g.grupoId = u.grupoId
+                 WHERE u.users = ?
+                   AND u.clave = ?
+                   AND u.estado = 1
+                   AND g.fechaFinal > NOW()
+                 LIMIT 1";
+
+        $stmt = $link->prepare($sql);
+        if(!$stmt){
                 $cn->Close();
-                responder(true, 'Autenticación correcta.');
-        }else{
-                $cn->Close();
-                responder(false, 'Usuario o contraseña incorrectos.');
+                responder(false, 'No fue posible validar las credenciales.');
         }
+
+        $stmt->bind_param('ss', $login, $pass);
+
+        if(!$stmt->execute()){
+                $stmt->close();
+                $cn->Close();
+                responder(false, 'No fue posible validar las credenciales.');
+        }
+
+        $resultado = $stmt->get_result();
+        $datos = $resultado ? $resultado->fetch_assoc() : null;
+
+        $stmt->close();
+        $cn->Close();
+
+        if($datos){
+                session_regenerate_id(true);
+                $_SESSION["idUser"]=$datos['usersId'];
+                $_SESSION["idGrupo"]=$datos['grupoId'];
+                $_SESSION["login"]=$datos['users'];
+                $_SESSION["nivel"]=$datos['nivel'];
+                $_SESSION["nombre"]=$datos['nombres'];
+                $_SESSION["hora"]=date("Y-n-j H:i:s");
+                responder(true, 'Autenticación correcta.');
+        }
+
+        responder(false, 'Usuario o contraseña incorrectos.');
 ?>
