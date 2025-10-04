@@ -14,12 +14,23 @@ header("location:login.php");
   //comparamos el tiempo transcurrido
   if($tmpTrans >= 12000){
   //si pasaron 10 minutos o más
-	session_destroy(); // destruyo la sesión
-	header("Location: login.php"); //envío al usuario a la pag. de autenticación
+        session_destroy(); // destruyo la sesión
+        header("Location: login.php"); //envío al usuario a la pag. de autenticación
   }else{ //sino, actualizo la fecha de la sesión
-	$_SESSION["hora"] = $ahora;
+        $_SESSION["hora"] = $ahora;
   }
 }
+
+$nivelUsuario = (int)($_SESSION['nivel'] ?? 0);
+if (!in_array($nivelUsuario, [1, 2], true)) {
+    header('Location: news.php');
+    exit();
+}
+
+$nombreUsuario = $_SESSION["nombre"] ?? 'Usuario';
+$mensajeFlash = isset($_GET['mensaje']) ? trim((string)$_GET['mensaje']) : '';
+$errorFlash = isset($_GET['error']) ? trim((string)$_GET['error']) : '';
+$canManageNews = in_array($nivelUsuario, [1, 3], true);
 ?>
 
 <!DOCTYPE html>
@@ -70,10 +81,22 @@ header("location:login.php");
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="user.php">Subir banner</a>
+                    </li>
+                    <li class="nav-item">
+                        <?php if ($canManageNews): ?>
+                            <a class="nav-link" href="news.php">Publicar noticia</a>
+                        <?php else: ?>
+                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
+                        <?php endif; ?>
+                    </li>
+                </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <span class="user-info">
-                            <i class="fas fa-user me-2"></i><?php echo $_SESSION["nombre"]; ?>
+                            <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
                         </span>
                     </li>
                     <li class="nav-item dropdown">
@@ -107,10 +130,17 @@ header("location:login.php");
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <?php if (isset($_GET['mensaje'])): ?>
+                <?php if ($mensajeFlash !== ''): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle me-2"></i>
-                    <?php echo htmlspecialchars($_GET['mensaje']); ?>
+                    <?php echo htmlspecialchars($mensajeFlash, ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php endif; ?>
+                <?php if ($errorFlash !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php echo htmlspecialchars($errorFlash, ENT_QUOTES, 'UTF-8'); ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 <?php endif; ?>

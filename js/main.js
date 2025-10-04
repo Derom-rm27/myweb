@@ -1,8 +1,8 @@
 // Wait for the DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize the carousel with custom settings
-    const carousel = document.querySelector('#mainCarousel');
-    if (carousel) {
+    const carousel = document.querySelector('#bannerCarousel');
+    if (carousel && typeof bootstrap !== 'undefined') {
         new bootstrap.Carousel(carousel, {
             interval: 5000, // Change slide every 5 seconds
             wrap: true,     // Continuous loop
@@ -13,8 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add smooth scrolling to all links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+            const targetSelector = this.getAttribute('href');
+            if (!targetSelector || targetSelector === '#') {
+                return;
+            }
+
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const target = document.querySelector(targetSelector);
             if (target) {
                 target.scrollIntoView({
                     behavior: 'smooth'
@@ -51,4 +56,4 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.transition = 'all 0.5s ease-out';
         observer.observe(card);
     });
-}); 
+});
