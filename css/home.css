@@ -190,6 +190,32 @@
     position: relative;
 }
 
+.news-section .ratio {
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+}
+
+.news-section .card-img-top {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.news-section .card-subtitle {
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+.news-section .btn-link {
+    color: #1a237e;
+    font-weight: 600;
+}
+
+.news-section .btn-link:hover {
+    color: #0d47a1;
+    text-decoration: none;
+}
+
 .card {
     border: none;
     border-radius: 15px;

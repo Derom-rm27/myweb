@@ -1,37 +1,76 @@
+<?php
+$newsItems = is_array($latestNews ?? null) ? $latestNews : [];
+$truncate = static function (string $text, int $length = 180): string {
+    if (function_exists('mb_strlen')) {
+        if (mb_strlen($text, 'UTF-8') <= $length) {
+            return $text;
+        }
+
+        return rtrim(mb_substr($text, 0, $length, 'UTF-8')) . '…';
+    }
+
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+
+    return rtrim(substr($text, 0, $length)) . '…';
+};
+?>
 <section class="news-section py-5">
     <div class="container">
-        <h2 class="text-center mb-4">Últimas Noticias</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images/news/news_1.png" class="card-img-top" alt="Testing Automatizado">
-                    <div class="card-body">
-                        <h5 class="card-title">Testing Automatizado</h5>
-                        <p class="card-text">Descubre las mejores herramientas y prácticas para implementar pruebas automatizadas en tu proyecto.</p>
-                        <a href="#" class="btn btn-primary">Leer más</a>
-                    </div>
-                </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <p class="text-uppercase text-muted mb-1">Noticias</p>
+                <h2 class="mb-0">Últimas publicaciones</h2>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images/news/news_2.jpg" class="card-img-top" alt="DevOps">
-                    <div class="card-body">
-                        <h5 class="card-title">DevOps y Calidad</h5>
-                        <p class="card-text">Integración continua y entrega continua: claves para mantener la calidad del software.</p>
-                        <a href="#" class="btn btn-primary">Leer más</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="images/news/news_3.jpg" class="card-img-top" alt="Seguridad">
-                    <div class="card-body">
-                        <h5 class="card-title">Seguridad en el Desarrollo</h5>
-                        <p class="card-text">Mejores prácticas para implementar seguridad desde las primeras fases del desarrollo.</p>
-                        <a href="#" class="btn btn-primary">Leer más</a>
-                    </div>
-                </div>
-            </div>
+            <a href="#news" class="btn btn-outline-primary mt-3 mt-md-0 disabled" aria-disabled="true">
+                Gestión en construcción
+            </a>
         </div>
+        <?php if (!empty($newsItems)): ?>
+            <div class="row g-4">
+                <?php foreach ($newsItems as $news): ?>
+                    <?php
+                    $title   = htmlspecialchars((string) ($news['titulo'] ?? ''), ENT_QUOTES, 'UTF-8');
+                    $body    = (string) ($news['cuerpo'] ?? '');
+                    $excerpt = htmlspecialchars($truncate($body), ENT_QUOTES, 'UTF-8');
+                    $date    = !empty($news['fecha']) ? date_create((string) $news['fecha']) : null;
+                    $image   = !empty($news['imagen'])
+                        ? 'images/news/' . ltrim((string) $news['imagen'], '/')
+                        : 'images/news/news_1.png';
+                    ?>
+                    <div class="col-sm-6 col-lg-4">
+                        <article class="card h-100 shadow-sm border-0">
+                            <div class="ratio ratio-16x9">
+                                <img
+                                    src="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>"
+                                    class="card-img-top object-fit-cover"
+                                    alt="<?php echo $title; ?>"
+                                >
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title"><?php echo $title; ?></h5>
+                                <?php if ($date instanceof DateTimeInterface): ?>
+                                    <p class="card-subtitle text-muted small mb-3">
+                                        <?php echo htmlspecialchars($date->format('d \d\e F \d\e Y'), ENT_QUOTES, 'UTF-8'); ?>
+                                    </p>
+                                <?php endif; ?>
+                                <p class="card-text flex-grow-1">
+                                    <?php echo $excerpt; ?>
+                                </p>
+                                <div class="mt-3">
+                                    <span class="btn btn-link p-0">Leer más próximamente</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <div class="text-center py-5">
+                <h3 class="fw-semibold">Todavía no hay noticias publicadas</h3>
+                <p class="text-muted mb-0">En cuanto se carguen noticias aparecerán automáticamente aquí.</p>
+            </div>
+        <?php endif; ?>
     </div>
 </section>

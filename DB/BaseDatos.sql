@@ -34,6 +34,10 @@ CREATE TABLE usuarios (
 INSERT INTO usuarios (grupoId, nombres, users, clave, nivel, estado, email, perfil, fechaCreada)
 VALUES (1, 'Super Admin', 'root', 'admin', 1, 1, 'admin@local', '', NOW());
 
+INSERT INTO usuarios (grupoId, nombres, users, clave, nivel, estado, email, perfil, fechaCreada)
+VALUES (1, 'Editora Noticias', 'news_editor', 'editor123', 3, 1, 'news@example.com', '', NOW())
+ON DUPLICATE KEY UPDATE nivel=VALUES(nivel), estado=VALUES(estado);
+
 DROP TABLE IF EXISTS grupos;
 CREATE TABLE grupos (
   grupoId      INT(9) NOT NULL AUTO_INCREMENT,
