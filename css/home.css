@@ -118,9 +118,26 @@
     line-height: 1.6;
 }
 
+
 .banner-cta {
     display: flex;
     justify-content: center;
+}
+
+.banner-cta--overlay {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 480px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.banner-cta--overlay .banner-cta__button {
+    pointer-events: all;
+    width: 100%;
 }
 
 .banner-cta__button {
@@ -141,6 +158,18 @@
 .carousel-caption .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(64, 196, 255, 0.4);
+}
+
+@media (max-width: 576px) {
+    .banner-cta--overlay {
+        bottom: 20px;
+        width: calc(100% - 24px);
+    }
+
+    .banner-cta--overlay .banner-cta__button {
+        padding: 12px 18px;
+        font-size: 0.95rem;
+    }
 }
 
 .carousel-indicators [data-bs-target] {
