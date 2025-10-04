@@ -118,6 +118,17 @@
     line-height: 1.6;
 }
 
+.banner-cta {
+    display: flex;
+    justify-content: center;
+}
+
+.banner-cta__button {
+    min-width: 180px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .carousel-caption .btn-primary {
     background: linear-gradient(135deg, #40c4ff 0%, #00bcd4 100%);
     border: none;

@@ -24,13 +24,15 @@
                         <h3><?php echo htmlspecialchars((string) ($banner['Titulo'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
                         <p><?php echo htmlspecialchars((string) ($banner['Describir'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
                         <?php if (!empty($banner['Enlace'])): ?>
-                            <a
-                                href="<?php echo htmlspecialchars((string) $banner['Enlace'], ENT_QUOTES, 'UTF-8'); ?>"
-                                class="btn btn-primary"
-                                target="_blank"
-                            >
-                                Ver más <i class="fas fa-arrow-right ms-2"></i>
-                            </a>
+                            <div class="banner-cta">
+                                <a
+                                    href="<?php echo htmlspecialchars((string) $banner['Enlace'], ENT_QUOTES, 'UTF-8'); ?>"
+                                    class="btn btn-primary banner-cta__button"
+                                    target="_blank"
+                                >
+                                    Descubre más <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
