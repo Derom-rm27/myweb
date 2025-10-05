@@ -99,7 +99,10 @@
     max-width: 80%;
     margin: 0 auto;
     border: 1px solid rgba(64, 196, 255, 0.2);
-    position: relative;
+    position: absolute;
+    left: 50%;
+    bottom: 28%;
+    transform: translateX(-50%);
     z-index: 2;
 }
 
@@ -168,6 +171,11 @@
     .banner-cta--overlay {
         bottom: 20px;
         width: calc(100% - 24px);
+    }
+
+    .carousel-caption {
+        bottom: 34%;
+        padding: 18px;
     }
 
     .banner-cta--overlay .banner-cta__button {
