@@ -98,11 +98,11 @@
     border-radius: 15px;
     border: 1px solid rgba(64, 196, 255, 0.2);
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 200px;
-    width: min(1042px, 100%);
-    margin: 0 auto 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 120px;
+    width: min(1042px, calc(100% - 80px));
+    margin: 0;
     z-index: 2;
 }
 
@@ -130,10 +130,9 @@
 .banner-cta--overlay {
     position: absolute;
     left: 50%;
-    bottom: 12%;
+    bottom: 40px;
     transform: translateX(-50%);
-    width: 100%;
-    max-width: 1042px;
+    width: min(1042px, calc(100% - 80px));
     padding: 0 20px;
     z-index: 3;
     pointer-events: none;
@@ -170,14 +169,13 @@
 
 @media (max-width: 576px) {
     .carousel-caption {
-        bottom: 120px;
-        margin: 0 12px 120px;
+        bottom: 140px;
         width: calc(100% - 24px);
         padding: 18px;
     }
 
     .banner-cta--overlay {
-        bottom: 24px;
+        bottom: 28px;
         width: calc(100% - 24px);
     }
 
