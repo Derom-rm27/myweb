@@ -448,11 +448,12 @@
 }
 
 .captcha-group img {
-    flex: 1;
-    height: 44px;
+    flex: 0 0 auto;
+    width: 140px;
+    height: 40px;
     border-radius: 10px;
     background: #ffffff;
-    object-fit: cover;
+    object-fit: contain;
     cursor: pointer;
 }
 
