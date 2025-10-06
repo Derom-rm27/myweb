@@ -96,10 +96,13 @@
     backdrop-filter: blur(10px);
     padding: 25px;
     border-radius: 15px;
-    max-width: 80%;
-    margin: 0 auto;
     border: 1px solid rgba(64, 196, 255, 0.2);
-    position: relative;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 120px;
+    width: min(1042px, calc(100% - 80px));
+    margin: 0;
     z-index: 2;
 }
 
@@ -118,6 +121,38 @@
     line-height: 1.6;
 }
 
+
+.banner-cta {
+    display: flex;
+    justify-content: center;
+}
+
+.banner-cta--overlay {
+    position: absolute;
+    left: 50%;
+    bottom: 40px;
+    transform: translateX(-50%);
+    width: min(1042px, calc(100% - 80px));
+    padding: 0 20px;
+    z-index: 3;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+}
+
+.banner-cta--overlay .banner-cta__button {
+    pointer-events: all;
+}
+
+.banner-cta__button {
+    padding: 14px 36px;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 999px;
+    box-shadow: 0 12px 30px rgba(64, 196, 255, 0.35);
+}
+
 .carousel-caption .btn-primary {
     background: linear-gradient(135deg, #40c4ff 0%, #00bcd4 100%);
     border: none;
@@ -130,6 +165,24 @@
 .carousel-caption .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(64, 196, 255, 0.4);
+}
+
+@media (max-width: 576px) {
+    .carousel-caption {
+        bottom: 140px;
+        width: calc(100% - 24px);
+        padding: 18px;
+    }
+
+    .banner-cta--overlay {
+        bottom: 28px;
+        width: calc(100% - 24px);
+    }
+
+    .banner-cta--overlay .banner-cta__button {
+        padding: 12px 18px;
+        font-size: 0.95rem;
+    }
 }
 
 .carousel-indicators [data-bs-target] {
