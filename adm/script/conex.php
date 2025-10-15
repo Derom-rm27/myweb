@@ -14,7 +14,7 @@ class MySQLcn {
 	private $_username = "root";
 	private $_password = "";
 	private $_database = "myweb";
-	private $_port = 3307;
+        private $_port = 3306;
 	
 	// Establezca una conexión a la base de datos, cuando se crea una instancia de clase
 	public function __construct() {
