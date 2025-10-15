@@ -22,6 +22,7 @@ require_once 'script/conex.php';
 
 $titulo    = trim($_POST['titulo'] ?? '');
 $contenido = trim($_POST['contenido'] ?? '');
+$enlace    = trim($_POST['enlace'] ?? '');
 $estado    = isset($_POST['estado']) ? 1 : 0;
 $fecha     = date('Y-m-d H:i:s');
 $usersId   = (int) ($_SESSION['idUser'] ?? 0);
@@ -33,6 +34,11 @@ if ($usersId <= 0) {
 
 if ($titulo === '' || $contenido === '') {
     header('Location: news.php?error=' . urlencode('Debe completar el título y el contenido de la noticia.'));
+    exit();
+}
+
+if ($enlace !== '' && filter_var($enlace, FILTER_VALIDATE_URL) === false) {
+    header('Location: news.php?error=' . urlencode('La URL proporcionada no es válida.'));
     exit();
 }
 
@@ -98,10 +104,11 @@ $cn = new MySQLcn();
 
 $tituloDb    = $cn->SecureInput($titulo);
 $contenidoDb = $cn->SecureInput($contenido);
+$enlaceDb    = $enlace !== '' ? "'" . $cn->SecureInput($enlace) . "'" : 'NULL';
 $imagenDb    = $imagenNombre !== null ? "'" . $cn->SecureInput($imagenNombre) . "'" : 'NULL';
 
-$sql = "INSERT INTO noticias (usersId, titulo, cuerpo, imagen, estado, fecha)
-        VALUES ('$usersId', '$tituloDb', '$contenidoDb', $imagenDb, '$estado', '$fecha')";
+$sql = "INSERT INTO noticias (usersId, titulo, cuerpo, imagen, enlace, estado, fecha)
+        VALUES ('$usersId', '$tituloDb', '$contenidoDb', $imagenDb, $enlaceDb, '$estado', '$fecha')";
 
 try {
     $cn->InsertaDb($sql);

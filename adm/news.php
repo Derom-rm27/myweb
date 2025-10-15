@@ -25,37 +25,10 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
     <title>Publicar noticia</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        .preview-image {
-            max-width: 300px;
-            max-height: 300px;
-            margin-top: 10px;
-        }
-        .upload-area {
-            border: 2px dashed #ccc;
-            border-radius: 5px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-        .upload-area:hover {
-            border-color: #0d6efd;
-        }
-        .navbar {
-            margin-bottom: 2rem;
-        }
-        .dropdown-menu {
-            min-width: 200px;
-        }
-        .user-info {
-            color: white;
-            margin-right: 1rem;
-        }
-    </style>
+    <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<body class="dashboard-body">
+<nav class="navbar navbar-expand-lg dashboard-navbar">
     <div class="container">
         <a class="navbar-brand" href="#">Panel de Control</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -91,6 +64,20 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                                 <i class="fas fa-key me-2"></i>Cambiar Contraseña
                             </a>
                         </li>
+                        <?php if (in_array($nivelUsuario, [1, 2], true)): ?>
+                        <li>
+                            <a class="dropdown-item" href="banners.php">
+                                <i class="fas fa-images me-2"></i>Gestionar banners
+                            </a>
+                        </li>
+                        <?php endif; ?>
+                        <?php if ($nivelUsuario === 1): ?>
+                        <li>
+                            <a class="dropdown-item" href="permissions.php">
+                                <i class="fas fa-user-shield me-2"></i>Dar permisos
+                            </a>
+                        </li>
+                        <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">
@@ -104,7 +91,8 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
     </div>
 </nav>
 
-<div class="container py-5">
+<main class="dashboard-main">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <?php if ($mensajeFlash !== ''): ?>
@@ -121,8 +109,8 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+            <div class="card dashboard-card">
+                <div class="card-header">
                     <h4 class="mb-0">Publicar nueva noticia</h4>
                 </div>
                 <div class="card-body">
@@ -136,6 +124,20 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                                 </div>
                             </div>
                             <input type="text" class="form-control" id="titulo" name="titulo" maxlength="250" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="enlace" class="form-label">Enlace externo (opcional)</label>
+                            <input
+                                type="url"
+                                class="form-control"
+                                id="enlace"
+                                name="enlace"
+                                placeholder="https://ejemplo.com/noticia-completa"
+                                maxlength="500"
+                                inputmode="url"
+                            >
+                            <div class="form-text">Si agregas una URL, el botón «Leer más» llevará a esa página.</div>
                         </div>
 
                         <div class="mb-3">
@@ -164,6 +166,7 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
         </div>
     </div>
 </div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -175,16 +178,16 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
 
     uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
-        uploadArea.style.borderColor = '#0d6efd';
+        uploadArea.classList.add('dragover');
     });
 
     uploadArea.addEventListener('dragleave', () => {
-        uploadArea.style.borderColor = '#ccc';
+        uploadArea.classList.remove('dragover');
     });
 
     uploadArea.addEventListener('drop', (e) => {
         e.preventDefault();
-        uploadArea.style.borderColor = '#ccc';
+        uploadArea.classList.remove('dragover');
         const file = e.dataTransfer.files[0];
         if (file && file.type.startsWith('image/')) {
             fileInput.files = e.dataTransfer.files;
@@ -202,7 +205,7 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
     function showPreview(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            preview.innerHTML = `<img src="${e.target.result}" class="preview-image img-thumbnail" alt="Vista previa">`;
+            preview.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Vista previa">`;
         };
         reader.readAsDataURL(file);
     }

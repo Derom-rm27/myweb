@@ -1,0 +1,91 @@
+body {
+    background: linear-gradient(135deg, #050A30 0%, #1D2671 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 15px;
+}
+
+.register-card {
+    background: rgba(9, 17, 61, 0.9);
+    border-radius: 18px;
+    box-shadow: 0 25px 45px rgba(5, 10, 48, 0.35);
+    max-width: 520px;
+    width: 100%;
+    padding: 40px 35px;
+    color: #fff;
+}
+
+.register-card h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.register-card p {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 25px;
+}
+
+.form-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 500;
+}
+
+.form-control,
+.form-select {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-radius: 10px;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: #ffffff;
+    color: #050a30;
+    border-color: #40c4ff;
+    box-shadow: 0 0 0 0.25rem rgba(64, 196, 255, 0.35);
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #40c4ff 0%, #2a6dd1 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #5cd4ff 0%, #3a7ef1 100%);
+    box-shadow: 0 10px 25px rgba(64, 196, 255, 0.35);
+}
+
+.alert {
+    border-radius: 12px;
+}
+
+.existing-account {
+    text-align: center;
+    margin-top: 25px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.existing-account a {
+    color: #40c4ff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.existing-account a:hover {
+    color: #fff;
+}

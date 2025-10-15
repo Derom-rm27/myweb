@@ -1,0 +1,330 @@
+:root {
+    --dashboard-primary: #364fc7;
+    --dashboard-primary-dark: #1e3a8a;
+    --dashboard-accent: #40c4ff;
+    --dashboard-bg: linear-gradient(135deg, #050A30 0%, #1D2671 45%, #0F3460 100%);
+    --dashboard-card-bg: rgba(12, 23, 64, 0.92);
+    --dashboard-card-border: rgba(64, 196, 255, 0.25);
+    --dashboard-text: #f1f5ff;
+    --dashboard-muted: rgba(226, 232, 240, 0.7);
+}
+
+body.dashboard-body {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--dashboard-bg);
+    min-height: 100vh;
+    color: var(--dashboard-text);
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-navbar {
+    background: linear-gradient(135deg, rgba(54, 79, 199, 0.95) 0%, rgba(15, 52, 96, 0.95) 100%);
+    backdrop-filter: blur(6px);
+    box-shadow: 0 18px 45px rgba(5, 10, 48, 0.35);
+    border-bottom: 1px solid rgba(64, 196, 255, 0.25);
+}
+
+.dashboard-navbar .navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.dashboard-navbar .nav-link {
+    color: var(--dashboard-muted);
+    font-weight: 500;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-navbar .nav-link:hover,
+.dashboard-navbar .nav-link:focus,
+.dashboard-navbar .nav-link.active {
+    color: var(--dashboard-text);
+    transform: translateY(-1px);
+}
+
+.dashboard-navbar .nav-link.disabled {
+    opacity: 0.45;
+    color: rgba(226, 232, 240, 0.35) !important;
+}
+
+.dashboard-navbar .dropdown-menu {
+    background: rgba(10, 20, 58, 0.95);
+    border: 1px solid rgba(64, 196, 255, 0.25);
+    border-radius: 14px;
+    padding: 0.5rem;
+    box-shadow: 0 20px 45px rgba(5, 10, 48, 0.45);
+}
+
+.dashboard-navbar .dropdown-item {
+    color: var(--dashboard-muted);
+    border-radius: 10px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-navbar .dropdown-item:hover,
+.dashboard-navbar .dropdown-item:focus,
+.dashboard-navbar .dropdown-item.active {
+    background: rgba(64, 196, 255, 0.2);
+    color: var(--dashboard-text);
+}
+
+.dashboard-navbar .dropdown-divider {
+    border-color: rgba(64, 196, 255, 0.2);
+}
+
+.dashboard-main {
+    flex: 1;
+    padding: 3rem 0;
+}
+
+.dashboard-card {
+    background: var(--dashboard-card-bg);
+    border: 1px solid var(--dashboard-card-border);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(5, 10, 48, 0.35);
+    overflow: hidden;
+    color: var(--dashboard-text);
+}
+
+.dashboard-card .card-header {
+    background: linear-gradient(135deg, rgba(64, 196, 255, 0.2) 0%, rgba(76, 110, 245, 0.25) 100%);
+    border-bottom: 1px solid rgba(64, 196, 255, 0.25);
+    color: var(--dashboard-text);
+}
+
+.dashboard-card .card-header h4,
+.dashboard-card .card-header h5 {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.dashboard-card .card-body {
+    padding: 2rem;
+}
+
+.dashboard-card .form-label,
+.dashboard-card dt {
+    color: var(--dashboard-muted);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+.dashboard-card .form-control,
+.dashboard-card .form-select,
+.dashboard-card textarea {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(64, 196, 255, 0.2);
+    color: var(--dashboard-text);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card .form-control::placeholder,
+.dashboard-card textarea::placeholder {
+    color: rgba(226, 232, 240, 0.5);
+}
+
+.dashboard-card .form-control:focus,
+.dashboard-card .form-select:focus,
+.dashboard-card textarea:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--dashboard-accent);
+    box-shadow: 0 0 0 0.25rem rgba(64, 196, 255, 0.25);
+    color: var(--dashboard-text);
+}
+
+.dashboard-card .form-check-label {
+    color: var(--dashboard-muted);
+}
+
+.dashboard-card .form-check-input:checked {
+    background-color: var(--dashboard-accent);
+    border-color: var(--dashboard-accent);
+}
+
+.dashboard-body .btn-primary {
+    background: linear-gradient(135deg, #40c4ff 0%, #2a6dd1 100%);
+    border: none;
+    border-radius: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.75rem 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-body .btn-primary:hover,
+.dashboard-body .btn-primary:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(64, 196, 255, 0.35);
+}
+
+.dashboard-body .btn-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #d63031 100%);
+    border: none;
+    border-radius: 14px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 0.75rem 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: #fff;
+}
+
+.dashboard-body .btn-danger:hover,
+.dashboard-body .btn-danger:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(255, 107, 107, 0.35);
+}
+
+.dashboard-body .btn-outline-light,
+.dashboard-body .btn-outline-secondary {
+    border-radius: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--dashboard-text);
+    border-color: rgba(255, 255, 255, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-body .btn-outline-light:hover,
+.dashboard-body .btn-outline-light:focus,
+.dashboard-body .btn-outline-secondary:hover,
+.dashboard-body .btn-outline-secondary:focus {
+    background: rgba(64, 196, 255, 0.2);
+    border-color: rgba(64, 196, 255, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(64, 196, 255, 0.2);
+}
+
+.dashboard-body .btn-outline-danger {
+    border-radius: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #ffb3b3;
+    border-color: rgba(255, 107, 129, 0.55);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.dashboard-body .btn-outline-danger:hover,
+.dashboard-body .btn-outline-danger:focus {
+    background: rgba(255, 107, 129, 0.25);
+    border-color: rgba(255, 107, 129, 0.75);
+    color: #ffe0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(255, 107, 129, 0.3);
+}
+
+.dashboard-body .alert {
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--dashboard-text);
+    box-shadow: 0 18px 30px rgba(5, 10, 48, 0.35);
+}
+
+.dashboard-body .alert-success {
+    border-color: rgba(64, 255, 186, 0.45);
+    background: rgba(46, 204, 113, 0.12);
+}
+
+.dashboard-body .alert-danger {
+    border-color: rgba(255, 107, 129, 0.45);
+    background: rgba(231, 76, 60, 0.12);
+}
+
+.dashboard-body .badge {
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+}
+
+.dashboard-body .badge.bg-success {
+    background: rgba(46, 204, 113, 0.25) !important;
+    color: #9fffd6;
+}
+
+.dashboard-body .badge.bg-danger {
+    background: rgba(231, 76, 60, 0.25) !important;
+    color: #ffb3b3;
+}
+
+.dashboard-body .badge-level {
+    background: rgba(64, 196, 255, 0.18);
+    color: var(--dashboard-text);
+}
+
+.upload-area {
+    border: 2px dashed rgba(64, 196, 255, 0.35);
+    border-radius: 18px;
+    padding: 2.5rem 1.5rem;
+    background: rgba(255, 255, 255, 0.04);
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: rgba(64, 196, 255, 0.85);
+    background: rgba(64, 196, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.preview-image {
+    border-radius: 16px;
+    box-shadow: 0 18px 35px rgba(5, 10, 48, 0.35);
+    border: 1px solid rgba(64, 196, 255, 0.25);
+}
+
+.dashboard-body .btn-close {
+    filter: invert(1) grayscale(100%);
+}
+
+.dashboard-body .modal-content {
+    background: rgba(12, 23, 64, 0.95);
+    border: 1px solid rgba(64, 196, 255, 0.25);
+    border-radius: 18px;
+    color: var(--dashboard-text);
+    box-shadow: 0 20px 45px rgba(5, 10, 48, 0.45);
+}
+
+.dashboard-body .modal-header,
+.dashboard-body .modal-footer {
+    border-color: rgba(64, 196, 255, 0.15);
+}
+
+.dashboard-body dl dt,
+.dashboard-body dl dd {
+    color: var(--dashboard-muted);
+}
+
+.dashboard-body dl dd {
+    color: var(--dashboard-text);
+    font-weight: 500;
+}
+
+.dashboard-body .form-message,
+.dashboard-body small,
+.dashboard-body .text-white-50 {
+    color: var(--dashboard-muted) !important;
+}
+
+.dashboard-body a,
+.dashboard-body a:hover {
+    text-decoration: none;
+}
+
+.dashboard-body .user-info {
+    color: var(--dashboard-text);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+@media (max-width: 576px) {
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .upload-area {
+        padding: 2rem 1rem;
+    }
+}

@@ -1,5 +1,6 @@
 <?php
 $newsItems = is_array($latestNews ?? null) ? $latestNews : [];
+$newsItems = array_slice($newsItems, 0, 3);
 $truncate = static function (string $text, int $length = 180): string {
     if (function_exists('mb_strlen')) {
         if (mb_strlen($text, 'UTF-8') <= $length) {
@@ -16,7 +17,7 @@ $truncate = static function (string $text, int $length = 180): string {
     return rtrim(substr($text, 0, $length)) . '…';
 };
 ?>
-<section class="news-section py-5">
+<section id="news" class="news-section py-5">
     <div class="container">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
             <div>
@@ -38,6 +39,8 @@ $truncate = static function (string $text, int $length = 180): string {
                     $image   = !empty($news['imagen'])
                         ? 'images/news/' . ltrim((string) $news['imagen'], '/')
                         : 'images/news/news_1.png';
+                    $linkRaw = trim((string) ($news['enlace'] ?? ''));
+                    $link    = $linkRaw !== '' ? htmlspecialchars($linkRaw, ENT_QUOTES, 'UTF-8') : '';
                     ?>
                     <div class="col-sm-6 col-lg-4">
                         <article class="card h-100 shadow-sm border-0">
@@ -59,7 +62,18 @@ $truncate = static function (string $text, int $length = 180): string {
                                     <?php echo $excerpt; ?>
                                 </p>
                                 <div class="mt-3">
-                                    <span class="btn btn-link p-0">Leer más próximamente</span>
+                                    <?php if ($link !== ''): ?>
+                                        <a
+                                            class="btn btn-link p-0"
+                                            href="<?php echo $link; ?>"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Leer más
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="btn btn-link p-0 disabled" aria-disabled="true">Leer más próximamente</span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </article>

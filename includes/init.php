@@ -14,7 +14,7 @@ try {
     $newsRepository     = new NewsRepository($databaseConnection);
 
     $banners    = $bannerRepository->getActiveBanners();
-    $latestNews = $newsRepository->getLatestPublished(6);
+    $latestNews = $newsRepository->getLatestPublished(3);
 
     $databaseConnection->Close();
 } catch (Throwable $exception) {

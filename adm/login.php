@@ -122,12 +122,11 @@
         $cn= new MySQLcn();
         $link = $cn->GetLink();
 
-        $sql = "SELECT u.usersId, u.grupoId, u.nombres, u.users, u.nivel
+        $sql = "SELECT u.usersId, u.grupoId, u.nombres, u.users, u.nivel, u.estado
                  FROM usuarios u
                  INNER JOIN grupos g ON g.grupoId = u.grupoId
                  WHERE u.users = ?
                    AND u.clave = ?
-                   AND u.estado = 1
                    AND g.fechaFinal > NOW()
                  LIMIT 1";
 
@@ -152,6 +151,10 @@
         $cn->Close();
 
         if($datos){
+                if((int)$datos['estado'] !== 1){
+                        responder(false, 'Su cuenta está deshabilitada. Comuníquese con su administrador.');
+                }
+
                 session_regenerate_id(true);
                 $_SESSION["idUser"]=$datos['usersId'];
                 $_SESSION["idGrupo"]=$datos['grupoId'];

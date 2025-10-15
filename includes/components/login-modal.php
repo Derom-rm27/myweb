@@ -41,7 +41,7 @@
             <button type="submit" class="login-btn">Login</button>
 
             <div class="register-link">
-                Don't have an account? <a href="#" onclick="showRegister()">Register</a>
+                Don't have an account? <a href="register/index.php">Register</a>
             </div>
         </form>
     </div>

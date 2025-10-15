@@ -170,6 +170,7 @@ CREATE TABLE noticias (
   titulo     VARCHAR(250) NOT NULL,
   cuerpo     TEXT NOT NULL,
   imagen     VARCHAR(150) DEFAULT NULL,
+  enlace     VARCHAR(500) DEFAULT NULL,
   estado     TINYINT(1) NOT NULL DEFAULT 1,
   fecha      DATETIME NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idNoticia)

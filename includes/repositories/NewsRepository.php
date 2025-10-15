@@ -27,7 +27,7 @@ class NewsRepository
     {
         $limit = max(1, $limit);
         $sql = sprintf(
-            "SELECT titulo, cuerpo, imagen, fecha FROM noticias WHERE estado = 1 ORDER BY fecha DESC LIMIT %d",
+            "SELECT titulo, cuerpo, imagen, enlace, fecha FROM noticias WHERE estado = 1 ORDER BY fecha DESC LIMIT %d",
             $limit
         );
 

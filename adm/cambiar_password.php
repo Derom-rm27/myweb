@@ -4,6 +4,11 @@ if(!isset($_SESSION['login'])){
     header("location:login.php");
     exit();
 }
+
+$nivelUsuario   = (int)($_SESSION['nivel'] ?? 0);
+$nombreUsuario  = $_SESSION['nombre'] ?? 'Usuario';
+$mensajeExito   = isset($_GET['mensaje']) ? trim((string) $_GET['mensaje']) : '';
+$mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -15,22 +20,11 @@ if(!isset($_SESSION['login'])){
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        .navbar {
-            margin-bottom: 2rem;
-        }
-        .dropdown-menu {
-            min-width: 200px;
-        }
-        .user-info {
-            color: white;
-            margin-right: 1rem;
-        }
-    </style>
+    <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
-<body>
+<body class="dashboard-body">
     <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg dashboard-navbar">
         <div class="container">
             <a class="navbar-brand" href="#">Panel de Control</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -40,7 +34,7 @@ if(!isset($_SESSION['login'])){
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <span class="user-info">
-                            <i class="fas fa-user me-2"></i><?php echo $_SESSION["nombre"]; ?>
+                            <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
                         </span>
                     </li>
                     <li class="nav-item dropdown">
@@ -58,6 +52,20 @@ if(!isset($_SESSION['login'])){
                                     <i class="fas fa-key me-2"></i>Cambiar Contraseña
                                 </a>
                             </li>
+                            <?php if (in_array($nivelUsuario, [1, 2], true)): ?>
+                            <li>
+                                <a class="dropdown-item" href="banners.php">
+                                    <i class="fas fa-images me-2"></i>Gestionar banners
+                                </a>
+                            </li>
+                            <?php endif; ?>
+                            <?php if ($nivelUsuario === 1): ?>
+                            <li>
+                                <a class="dropdown-item" href="permissions.php">
+                                    <i class="fas fa-user-shield me-2"></i>Dar permisos
+                                </a>
+                            </li>
+                            <?php endif; ?>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger" href="logout.php">
@@ -71,14 +79,27 @@ if(!isset($_SESSION['login'])){
         </div>
     </nav>
 
-    <div class="container py-5">
+    <main class="dashboard-main">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
+                <div class="card dashboard-card">
+                    <div class="card-header">
                         <h4 class="mb-0">Cambiar Contraseña</h4>
                     </div>
                     <div class="card-body">
+                        <?php if ($mensajeExito !== ''): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($mensajeExito, ENT_QUOTES, 'UTF-8'); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($mensajeError !== ''): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i><?php echo htmlspecialchars($mensajeError, ENT_QUOTES, 'UTF-8'); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <?php endif; ?>
                         <form action="procesar_password.php" method="POST" id="passwordForm">
                             <div class="mb-3">
                                 <label for="password_actual" class="form-label">Contraseña Actual</label>
@@ -106,10 +127,11 @@ if(!isset($_SESSION['login'])){
             </div>
         </div>
     </div>
+    </main>
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         document.getElementById('passwordForm').addEventListener('submit', function(e) {
             const passwordNueva = document.getElementById('password_nueva').value;

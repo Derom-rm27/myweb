@@ -1,8 +1,4 @@
 (function () {
-    const registerAlert = () => {
-        alert('Aquí iría el formulario de registro o redirección');
-    };
-
     document.addEventListener('DOMContentLoaded', () => {
         const modalOverlay = document.getElementById('loginModal');
         const loginForm = document.getElementById('loginForm');
@@ -15,16 +11,6 @@
         if (!modalOverlay) {
             return;
         }
-
-        const openLoginModal = () => {
-            modalOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        };
-
-        const closeLoginModal = () => {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        };
 
         const setMessage = (text, type = 'error') => {
             if (!messageEl) {
@@ -49,6 +35,63 @@
             captchaImage.src = `${baseSrc}${separator}t=${Date.now()}`;
         };
 
+        const resetLoginForm = () => {
+            if (!loginForm) {
+                return;
+            }
+
+            loginForm.reset();
+            setMessage('', '');
+
+            if (loginBtn) {
+                loginBtn.textContent = originalButtonText || 'Login';
+                loginBtn.classList.remove('loading');
+                loginBtn.disabled = false;
+            }
+
+            refreshCaptcha();
+        };
+
+        const clearFormFields = () => {
+            if (!loginForm) {
+                return;
+            }
+
+            loginForm.reset();
+        };
+
+        const openLoginModal = () => {
+            resetLoginForm();
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        const closeLoginModal = () => {
+            modalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            resetLoginForm();
+        };
+
+        const shouldAutoOpen = () => {
+            const params = new URLSearchParams(window.location.search);
+            const loginParam = (params.get('login') || '').toLowerCase();
+
+            return loginParam === '1' || loginParam === 'true' || loginParam === 'yes' || loginParam === 'open';
+        };
+
+        const clearAutoOpenParam = () => {
+            const params = new URLSearchParams(window.location.search);
+
+            if (!params.has('login')) {
+                return;
+            }
+
+            params.delete('login');
+            const newSearch = params.toString();
+            const newUrl = `${window.location.pathname}${newSearch ? `?${newSearch}` : ''}${window.location.hash}`;
+            window.history.replaceState({}, document.title, newUrl);
+        };
+
         if (captchaImage) {
             captchaImage.addEventListener('click', refreshCaptcha);
         }
@@ -68,6 +111,11 @@
                 closeLoginModal();
             }
         });
+
+        if (shouldAutoOpen()) {
+            openLoginModal();
+            clearAutoOpenParam();
+        }
 
         if (loginForm && loginBtn) {
             loginForm.addEventListener('submit', async (event) => {
@@ -104,9 +152,11 @@
                         return;
                     }
 
+                    clearFormFields();
                     refreshCaptcha();
                     setMessage(data.message || 'No fue posible iniciar sesión.', 'error');
                 } catch (error) {
+                    clearFormFields();
                     refreshCaptcha();
                     setMessage('Ocurrió un error al iniciar sesión. Intente nuevamente.', 'error');
                     console.error(error);
@@ -122,6 +172,5 @@
         window.closeLoginModal = closeLoginModal;
         window.showLoginModal = openLoginModal;
         window.hideLoginModal = closeLoginModal;
-        window.showRegister = registerAlert;
     });
 })();
