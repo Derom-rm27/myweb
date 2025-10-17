@@ -69,6 +69,14 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="news.php">Publicar noticia</a>
                 </li>
+                <?php if ($nivelUsuario === 1): ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_news.php">Gestionar noticias</a>
+                </li>
+                <?php endif; ?>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">

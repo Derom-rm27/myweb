@@ -92,6 +92,14 @@ $canManageNews = in_array($nivelUsuario, [1, 3], true);
                             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
                         <?php endif; ?>
                     </li>
+                    <?php if ($nivelUsuario === 1): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_news.php">Gestionar noticias</a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
