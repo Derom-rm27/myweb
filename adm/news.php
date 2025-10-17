@@ -13,9 +13,29 @@ if (!in_array($nivelUsuario, [1, 3], true)) {
     exit();
 }
 
+$usuarioId = (int) ($_SESSION['idUser'] ?? 0);
 $nombreUsuario = $_SESSION['nombre'] ?? 'Usuario';
 $mensajeFlash = isset($_GET['mensaje']) ? trim((string) $_GET['mensaje']) : '';
 $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
+$canGrantPermissions = ($nivelUsuario === 1);
+$canAccessManageBanners = ($nivelUsuario === 1);
+$canAccessManageNews = ($nivelUsuario === 1);
+
+require_once __DIR__ . '/../includes/repositories/PermissionRepository.php';
+
+$permissionConnection = null;
+try {
+    $permissionConnection = new MySQLcn();
+    $permissionRepository = new PermissionRepository($permissionConnection);
+    $canAccessManageBanners = $permissionRepository->userCanManageBanners($usuarioId);
+    $canAccessManageNews = $permissionRepository->userCanManageNews($usuarioId);
+} catch (Throwable $exception) {
+    $permissionRepository = null;
+}
+
+if ($permissionConnection !== null) {
+    $permissionConnection->Close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -42,6 +62,25 @@ $errorFlash   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="news.php">Publicar noticia</a>
                 </li>
+                <li class="nav-item">
+                    <?php if ($canAccessManageBanners): ?>
+                        <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
+                    <?php else: ?>
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar banners</a>
+                    <?php endif; ?>
+                </li>
+                <li class="nav-item">
+                    <?php if ($canAccessManageNews): ?>
+                        <a class="nav-link" href="manage_news.php">Gestionar noticias</a>
+                    <?php else: ?>
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
+                    <?php endif; ?>
+                </li>
+                <?php if ($canGrantPermissions): ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_permissions.php">Dar permisos</a>
+                </li>
+                <?php endif; ?>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
