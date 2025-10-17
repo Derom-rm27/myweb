@@ -7,19 +7,40 @@ if (!isset($_SESSION['login'])) {
 }
 
 $nivelUsuario = (int) ($_SESSION['nivel'] ?? 0);
-if ($nivelUsuario !== 1) {
-    header('Location: news.php');
-    exit();
-}
-
+$usuarioId = (int) ($_SESSION['idUser'] ?? 0);
 $nombreUsuario = $_SESSION['nombre'] ?? 'Usuario';
 
+require_once __DIR__ . '/../includes/repositories/PermissionRepository.php';
 require_once __DIR__ . '/../includes/repositories/NewsRepository.php';
 
 $flashMessage = isset($_GET['mensaje']) ? trim((string) $_GET['mensaje']) : '';
 $flashError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
 
 $redirectBase = 'manage_news.php';
+
+$canManageBanners = ($nivelUsuario === 1);
+$canManageNews = ($nivelUsuario === 1);
+$canGrantPermissions = ($nivelUsuario === 1);
+$canUploadBanner = in_array($nivelUsuario, [1, 2], true);
+
+$permissionConnection = null;
+try {
+    $permissionConnection = new MySQLcn();
+    $permissionRepository = new PermissionRepository($permissionConnection);
+    $canManageBanners = $permissionRepository->userCanManageBanners($usuarioId);
+    $canManageNews = $permissionRepository->userCanManageNews($usuarioId);
+} catch (Throwable $exception) {
+    $permissionRepository = null;
+}
+
+if ($permissionConnection !== null) {
+    $permissionConnection->Close();
+}
+
+if (!$canManageNews) {
+    header('Location: news.php');
+    exit();
+}
 
 try {
     $connection = new MySQLcn();
@@ -126,14 +147,56 @@ function formatDate(?string $date): string
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        body {
+            background: #f5f7fb;
+            min-height: 100vh;
+        }
+        .navbar {
+            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.2);
+        }
+        .dropdown-menu {
+            min-width: 220px;
+        }
+        .page-hero {
+            background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+            color: #fff;
+            padding: 3rem 0 2rem;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 12px 30px rgba(102, 16, 242, 0.35);
+        }
+        .page-hero .lead {
+            opacity: 0.85;
+        }
+        .card {
+            border: none;
+            border-radius: 18px;
+        }
         .table-responsive {
             max-height: 60vh;
+        }
+        .table thead th {
+            font-weight: 600;
+            background-color: #f1f4fb;
+            color: #1f3b73;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(102, 16, 242, 0.05);
         }
         .badge-status {
             font-size: 0.9rem;
         }
         .news-content {
             max-width: 380px;
+        }
+        .empty-state {
+            padding: 3rem 1rem;
+        }
+        .empty-state i {
+            font-size: 2.5rem;
+            color: #6610f2;
         }
     </style>
 </head>
@@ -147,17 +210,34 @@ function formatDate(?string $date): string
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="user.php">Subir banner</a>
+                    <?php if ($canUploadBanner): ?>
+                        <a class="nav-link" href="user.php">Subir banner</a>
+                    <?php else: ?>
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Subir banner</a>
+                    <?php endif; ?>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="news.php">Publicar noticia</a>
+                    <?php if ($nivelUsuario === 1 || in_array($nivelUsuario, [1, 3], true)): ?>
+                        <a class="nav-link" href="news.php">Publicar noticia</a>
+                    <?php else: ?>
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
+                    <?php endif; ?>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
+                    <?php if ($canManageBanners): ?>
+                        <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
+                    <?php else: ?>
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar banners</a>
+                    <?php endif; ?>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="manage_news.php">Gestionar noticias</a>
                 </li>
+                <?php if ($canGrantPermissions): ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="manage_permissions.php">Dar permisos</a>
+                </li>
+                <?php endif; ?>
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
@@ -193,96 +273,112 @@ function formatDate(?string $date): string
     </div>
 </nav>
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3 mb-0">Listado de noticias</h1>
-        <a class="btn btn-success" href="news.php">
-            <i class="fas fa-plus me-2"></i>Nueva noticia
-        </a>
+<header class="page-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">Gestión de noticias</h1>
+                <p class="lead mb-0">Controla las publicaciones informativas con una experiencia visual renovada.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-light btn-lg text-primary shadow-sm" href="news.php">
+                    <i class="fas fa-plus me-2"></i>Nueva noticia
+                </a>
+            </div>
+        </div>
     </div>
+</header>
 
-    <?php if ($flashMessage !== ''): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <?php echo htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8'); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <?php endif; ?>
-    <?php if ($flashError !== ''): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            <?php echo htmlspecialchars($flashError, ENT_QUOTES, 'UTF-8'); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <?php endif; ?>
-
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <?php if (empty($newsEntries)): ?>
-                <div class="p-4 text-center text-muted">No hay noticias registradas.</div>
-            <?php else: ?>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                        <tr>
-                            <th scope="col">Título</th>
-                            <th scope="col" class="news-content">Contenido</th>
-                            <th scope="col">Imagen</th>
-                            <th scope="col" class="text-center">Estado</th>
-                            <th scope="col">Fecha</th>
-                            <th scope="col" class="text-end">Acciones</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($newsEntries as $news): ?>
-                            <tr>
-                                <td><?php echo htmlspecialchars((string) $news['titulo'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td class="text-muted small news-content"><?php echo nl2br(htmlspecialchars((string) $news['cuerpo'], ENT_QUOTES, 'UTF-8')); ?></td>
-                                <td>
-                                    <?php if (!empty($news['imagen'])): ?>
-                                        <img class="img-thumbnail" style="max-width: 120px;" src="<?php echo '../images/news/' . htmlspecialchars($news['imagen'], ENT_QUOTES, 'UTF-8'); ?>" alt="Imagen de noticia">
-                                    <?php else: ?>
-                                        <span class="text-muted">Sin imagen</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-center">
-                                    <?php if ((int) $news['estado'] === 1): ?>
-                                        <span class="badge bg-success badge-status">Publicada</span>
-                                    <?php else: ?>
-                                        <span class="badge bg-secondary badge-status">Oculta</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo htmlspecialchars(formatDate($news['fecha'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
-                                <td class="text-end">
-                                    <button
-                                        type="button"
-                                        class="btn btn-sm btn-outline-primary me-2 edit-news-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editNewsModal"
-                                        data-id="<?php echo (int) $news['idNoticia']; ?>"
-                                        data-title="<?php echo htmlspecialchars((string) $news['titulo'], ENT_QUOTES, 'UTF-8'); ?>"
-                                        data-body="<?php echo htmlspecialchars((string) $news['cuerpo'], ENT_QUOTES, 'UTF-8'); ?>"
-                                        data-status="<?php echo (int) $news['estado']; ?>"
-                                    >
-                                        <i class="fas fa-edit me-1"></i>Editar
-                                    </button>
-                                    <form action="<?php echo $redirectBase; ?>" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que desea eliminar esta noticia?');">
-                                        <input type="hidden" name="action" value="delete">
-                                        <input type="hidden" name="id" value="<?php echo (int) $news['idNoticia']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash-alt me-1"></i>Eliminar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <?php if ($flashMessage !== ''): ?>
+                <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?php echo htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
+            <?php if ($flashError !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php echo htmlspecialchars($flashError, ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <div class="card shadow-lg">
+                <div class="card-body p-0">
+                    <?php if (empty($newsEntries)): ?>
+                        <div class="empty-state text-center text-muted">
+                            <i class="fas fa-newspaper mb-3"></i>
+                            <p class="mb-0">No hay noticias registradas por el momento.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Título</th>
+                                    <th scope="col" class="news-content">Contenido</th>
+                                    <th scope="col">Imagen</th>
+                                    <th scope="col" class="text-center">Estado</th>
+                                    <th scope="col">Fecha</th>
+                                    <th scope="col" class="text-end">Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php foreach ($newsEntries as $news): ?>
+                                    <tr>
+                                        <td class="fw-semibold text-primary"><?php echo htmlspecialchars((string) $news['titulo'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td class="text-muted small news-content"><?php echo nl2br(htmlspecialchars((string) $news['cuerpo'], ENT_QUOTES, 'UTF-8')); ?></td>
+                                        <td>
+                                            <?php if (!empty($news['imagen'])): ?>
+                                                <img class="img-thumbnail rounded" style="max-width: 120px;" src="<?php echo '../images/news/' . htmlspecialchars($news['imagen'], ENT_QUOTES, 'UTF-8'); ?>" alt="Imagen de noticia">
+                                            <?php else: ?>
+                                                <span class="text-muted">Sin imagen</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="text-center">
+                                            <?php if ((int) $news['estado'] === 1): ?>
+                                                <span class="badge bg-success badge-status">Publicada</span>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary badge-status">Oculta</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?php echo htmlspecialchars(formatDate($news['fecha'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td class="text-end">
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-outline-primary me-2 edit-news-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editNewsModal"
+                                                data-id="<?php echo (int) $news['idNoticia']; ?>"
+                                                data-title="<?php echo htmlspecialchars((string) $news['titulo'], ENT_QUOTES, 'UTF-8'); ?>"
+                                                data-body="<?php echo htmlspecialchars((string) $news['cuerpo'], ENT_QUOTES, 'UTF-8'); ?>"
+                                                data-status="<?php echo (int) $news['estado']; ?>"
+                                            >
+                                                <i class="fas fa-edit me-1"></i>Editar
+                                            </button>
+                                            <form action="<?php echo $redirectBase; ?>" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que desea eliminar esta noticia?');">
+                                                <input type="hidden" name="action" value="delete">
+                                                <input type="hidden" name="id" value="<?php echo (int) $news['idNoticia']; ?>">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+</main>
 
 <div class="modal fade" id="editNewsModal" tabindex="-1" aria-labelledby="editNewsLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
