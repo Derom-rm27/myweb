@@ -1,0 +1,15 @@
+﻿uploads/
+assets/img/
+assets/images/
+images/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.zip
+*.xlsx
+*.pdf
+*.ico
+
+patch_codex.patch
