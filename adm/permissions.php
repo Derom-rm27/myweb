@@ -198,12 +198,12 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
                                 <i class="fas fa-key me-2"></i>Cambiar Contraseña
                             </a>
                         </li>
-                        <?php if (in_array($nivelUsuario, [1, 2], true)): ?>
-                        <li>
-                            <a class="dropdown-item" href="banners.php">
-                                <i class="fas fa-images me-2"></i>Gestionar banners
-                            </a>
-                        </li>
+                        <?php if ($nivelUsuario === 1): ?>
+                            <li>
+                                <a class="dropdown-item" href="permissions.php">
+                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
+                                </a>
+                            </li>
                         <?php endif; ?>
 
                         <li><hr class="dropdown-divider"></li>
