@@ -99,11 +99,7 @@ if ($permissionConnection !== null) {
                             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
                         <?php endif; ?>
                     </li>
-                    <?php if ($canGrantPermissions): ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="manage_permissions.php">Dar permisos</a>
-                    </li>
-                    <?php endif; ?>
+
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
