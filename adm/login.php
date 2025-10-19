@@ -52,6 +52,116 @@
                         }
                         return false;
         }
+        function limitarTexto($texto, $maximo)
+        {
+                if (!is_string($texto)) {
+                        $texto = (string) $texto;
+                }
+
+                if ($maximo <= 0) {
+                        return '';
+                }
+
+                if (function_exists('mb_strlen') && function_exists('mb_substr')) {
+                        if (mb_strlen($texto) <= $maximo) {
+                                return $texto;
+                        }
+
+                        return mb_substr($texto, 0, $maximo);
+                }
+
+                if (strlen($texto) <= $maximo) {
+                        return $texto;
+                }
+
+                return substr($texto, 0, $maximo);
+        }
+
+        function obtenerInformacionVisita()
+        {
+                $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+                $agente = strtolower($userAgent);
+
+                $dispositivo = 'Desconocido';
+                if ($userAgent === '') {
+                        $dispositivo = 'No identificado';
+                } elseif (VerificaEquipo('bot')) {
+                        $dispositivo = 'Bot';
+                } elseif (VerificaEquipo('mobile')) {
+                        $dispositivo = 'Móvil';
+                } elseif (VerificaEquipo('browser')) {
+                        $dispositivo = 'Escritorio';
+                } else {
+                        $dispositivo = 'Otro';
+                }
+
+                $navegador = 'Desconocido';
+
+                if (strpos($agente, 'brave') !== false) {
+                        $navegador = 'Brave';
+                } elseif (strpos($agente, 'edg/') !== false || strpos($agente, 'edge/') !== false) {
+                        $navegador = 'Microsoft Edge';
+                } elseif (strpos($agente, 'opr/') !== false || strpos($agente, 'opera') !== false) {
+                        $navegador = 'Opera';
+                } elseif (strpos($agente, 'firefox/') !== false) {
+                        $navegador = 'Mozilla Firefox';
+                } elseif (strpos($agente, 'chromium') !== false) {
+                        $navegador = 'Chromium';
+                } elseif (strpos($agente, 'chrome/') !== false && strpos($agente, 'edg/') === false && strpos($agente, 'opr/') === false) {
+                        $navegador = 'Google Chrome';
+                } elseif (strpos($agente, 'safari/') !== false && strpos($agente, 'chrome/') === false) {
+                        $navegador = 'Safari';
+                } elseif (strpos($agente, 'trident/') !== false || strpos($agente, 'msie') !== false) {
+                        $navegador = 'Internet Explorer';
+                }
+
+                $direccionIp = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+
+                return [
+                        'dispositivo' => $dispositivo,
+                        'navegador'   => $navegador,
+                        'ip'          => $direccionIp,
+                        'user_agent'  => $userAgent,
+                ];
+        }
+
+        function registrarVisita($conexion, array $datos)
+        {
+                if (!is_object($conexion) || !method_exists($conexion, 'GetLink')) {
+                        return;
+                }
+
+                $link = $conexion->GetLink();
+                if (!is_object($link) || !method_exists($link, 'prepare')) {
+                        return;
+                }
+
+                $infoVisita = obtenerInformacionVisita();
+
+                $sql = 'INSERT INTO registro_visitas (usersId, nivel, dispositivo, navegador, ip, user_agent) VALUES (?, ?, ?, ?, ?, ?)';
+                $stmt = @$link->prepare($sql);
+                if ($stmt === false) {
+                        return;
+                }
+
+                $userId = isset($datos['usersId']) ? (int) $datos['usersId'] : 0;
+                $nivel  = isset($datos['nivel']) ? (int) $datos['nivel'] : 0;
+                $ip     = limitarTexto($infoVisita['ip'], 45);
+                $agent  = $infoVisita['user_agent'];
+
+                $stmt->bind_param(
+                        'iissss',
+                        $userId,
+                        $nivel,
+                        $infoVisita['dispositivo'],
+                        $infoVisita['navegador'],
+                        $ip,
+                        $agent
+                );
+
+                $stmt->execute();
+                $stmt->close();
+        }
         //-------------------------------------------------------------------------//
         session_start();
 
@@ -148,10 +258,10 @@
         $datos = $resultado ? $resultado->fetch_assoc() : null;
 
         $stmt->close();
-        $cn->Close();
 
         if($datos){
                 if((int)$datos['estado'] !== 1){
+                        $cn->Close();
                         responder(false, 'Su cuenta está deshabilitada. Comuníquese con su administrador.');
                 }
 
@@ -162,8 +272,11 @@
                 $_SESSION["nivel"]=$datos['nivel'];
                 $_SESSION["nombre"]=$datos['nombres'];
                 $_SESSION["hora"]=date("Y-n-j H:i:s");
+                registrarVisita($cn, $datos);
+                $cn->Close();
                 responder(true, 'Autenticación correcta.');
         }
 
+        $cn->Close();
         responder(false, 'Usuario o contraseña incorrectos.');
 ?>
