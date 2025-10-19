@@ -127,11 +127,7 @@ $canGrantPermissions = ($nivelUsuario === 1);
                         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
                     <?php endif; ?>
                 </li>
-                <?php if ($canGrantPermissions): ?>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="manage_permissions.php">Dar permisos</a>
-                </li>
-                <?php endif; ?>
+
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
@@ -168,13 +164,7 @@ $canGrantPermissions = ($nivelUsuario === 1);
                             </a>
                         </li>
                         <?php endif; ?>
-                        <?php if ($canGrantPermissions): ?>
-                        <li>
-                            <a class="dropdown-item active" href="manage_permissions.php">
-                                <i class="fas fa-user-shield me-2"></i>Dar permisos
-                            </a>
-                        </li>
-                        <?php endif; ?>
+
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">

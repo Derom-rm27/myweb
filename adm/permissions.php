@@ -205,11 +205,7 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
                             </a>
                         </li>
                         <?php endif; ?>
-                        <li>
-                            <a class="dropdown-item active" href="permissions.php">
-                                <i class="fas fa-user-shield me-2"></i>Dar permisos
-                            </a>
-                        </li>
+
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">

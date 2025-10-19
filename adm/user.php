@@ -133,13 +133,7 @@ if ($permissionConnection !== null) {
                                 </a>
                             </li>
                             <?php endif; ?>
-                            <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Dar permisos
-                                </a>
-                            </li>
-                            <?php endif; ?>
+
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger" href="logout.php">

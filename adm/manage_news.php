@@ -182,11 +182,7 @@ function formatDate(?string $date): string
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="manage_news.php">Gestionar noticias</a>
                 </li>
-                <?php if ($canGrantPermissions): ?>
-                <li class="nav-item">
-                    <a class="nav-link" href="manage_permissions.php">Dar permisos</a>
-                </li>
-                <?php endif; ?>
+
             </ul>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
@@ -221,13 +217,7 @@ function formatDate(?string $date): string
                                 <i class="fas fa-newspaper me-2"></i>Gestionar noticias
                             </a>
                         </li>
-                        <?php if ($canGrantPermissions): ?>
-                        <li>
-                            <a class="dropdown-item" href="manage_permissions.php">
-                                <i class="fas fa-user-shield me-2"></i>Dar permisos
-                            </a>
-                        </li>
-                        <?php endif; ?>
+
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">
