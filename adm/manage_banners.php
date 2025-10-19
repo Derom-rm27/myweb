@@ -206,20 +206,10 @@ function formatDate(?string $date): string
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item active" href="manage_banners.php">
-                                <i class="fas fa-images me-2"></i>Gestionar banners
+                            <a class="dropdown-item" href="permissions.php">
+                                <i class="fas fa-user-shield me-2"></i>Otorgar permisos
                             </a>
                         </li>
-                        <?php if ($canManageNews): ?>
-                        <li>
-                            <a class="dropdown-item" href="manage_news.php">
-                                <i class="fas fa-newspaper me-2"></i>Gestionar noticias
-                            </a>
-                        </li>
-                        <?php endif; ?>
-                        <?php if ($canGrantPermissions): ?>
-
-                        <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">
