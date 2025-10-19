@@ -99,7 +99,11 @@ if ($permissionConnection !== null) {
                             <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
                         <?php endif; ?>
                     </li>
-
+                    <?php if ($canGrantPermissions): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage_permissions.php">Dar permisos</a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
@@ -126,6 +130,11 @@ if ($permissionConnection !== null) {
                             <li>
                                 <a class="dropdown-item" href="permissions.php">
                                     <i class="fas fa-user-shield me-2"></i>Otorgar permisos
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="visit_logs.php">
+                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
                                 </a>
                             </li>
                         <?php endif; ?>

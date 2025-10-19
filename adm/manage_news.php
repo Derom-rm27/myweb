@@ -211,6 +211,11 @@ function formatDate(?string $date): string
                                     <i class="fas fa-user-shield me-2"></i>Otorgar permisos
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="visit_logs.php">
+                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
+                                </a>
+                            </li>
                         <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
