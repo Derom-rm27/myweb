@@ -110,6 +110,26 @@ body.dashboard-body {
     letter-spacing: 0.02em;
 }
 
+.dashboard-card .card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+}
+
+.dashboard-section-title {
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.dashboard-section-subtitle {
+    margin-bottom: 0;
+    color: var(--dashboard-muted);
+}
+
 .dashboard-card .form-control,
 .dashboard-card .form-select,
 .dashboard-card textarea {
@@ -142,6 +162,157 @@ body.dashboard-body {
 .dashboard-card .form-check-input:checked {
     background-color: var(--dashboard-accent);
     border-color: var(--dashboard-accent);
+}
+
+.dashboard-card .table {
+    color: var(--dashboard-text);
+    margin-bottom: 0;
+}
+
+.dashboard-card .table thead th {
+    background: rgba(64, 196, 255, 0.12);
+    color: var(--dashboard-text);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    border-color: rgba(64, 196, 255, 0.25);
+    letter-spacing: 0.05em;
+}
+
+.dashboard-card .table tbody tr {
+    border-color: rgba(64, 196, 255, 0.1);
+    transition: background 0.2s ease;
+}
+
+.dashboard-card .table tbody tr:hover {
+    background: rgba(64, 196, 255, 0.08);
+}
+
+.dashboard-card .table a {
+    color: var(--dashboard-accent);
+}
+
+.dashboard-card .badge {
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    letter-spacing: 0.02em;
+}
+
+.dashboard-card .form-switch .form-check-input {
+    width: 3rem;
+    height: 1.5rem;
+    background-color: rgba(226, 232, 240, 0.2);
+    border-color: rgba(64, 196, 255, 0.4);
+}
+
+.dashboard-card .form-switch .form-check-input:focus {
+    box-shadow: 0 0 0 0.25rem rgba(64, 196, 255, 0.25);
+}
+
+.dashboard-card .form-switch .form-check-input:checked {
+    background-color: var(--dashboard-accent);
+    border-color: var(--dashboard-accent);
+}
+
+.dashboard-card .form-switch .form-check-input:checked:focus {
+    box-shadow: 0 0 0 0.25rem rgba(64, 196, 255, 0.35);
+}
+
+.dashboard-card .form-switch .form-check-input:checked::before {
+    background-color: #0b102b;
+}
+
+.dashboard-card .form-switch .form-check-input::before {
+    background-color: rgba(12, 23, 64, 0.9);
+}
+
+.dashboard-card .form-switch .form-check-input::after {
+    background-color: var(--dashboard-text);
+}
+
+.dashboard-table-responsive {
+    border-top: 1px solid rgba(64, 196, 255, 0.12);
+}
+
+.dashboard-empty-state {
+    padding: 3rem 1rem;
+    text-align: center;
+    color: var(--dashboard-muted);
+}
+
+.dashboard-empty-state i {
+    font-size: 2.75rem;
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--dashboard-accent);
+}
+
+.dashboard-alert {
+    border-radius: 16px;
+    border: 1px solid rgba(64, 196, 255, 0.25);
+    background: rgba(12, 23, 64, 0.85);
+    color: var(--dashboard-text);
+}
+
+.dashboard-alert.alert-success {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.12);
+    color: #6ee7b7;
+}
+
+.dashboard-alert.alert-danger {
+    border-color: rgba(248, 113, 113, 0.35);
+    background: rgba(248, 113, 113, 0.12);
+    color: #fca5a5;
+}
+
+.dashboard-card .btn-sm {
+    border-radius: 12px;
+    padding: 0.35rem 0.9rem;
+}
+
+.dashboard-card .btn-outline-primary {
+    color: var(--dashboard-accent);
+    border-color: rgba(64, 196, 255, 0.4);
+}
+
+.dashboard-card .btn-outline-primary:hover,
+.dashboard-card .btn-outline-primary:focus {
+    background: rgba(64, 196, 255, 0.15);
+    color: var(--dashboard-text);
+}
+
+.dashboard-card .btn-outline-danger {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.4);
+}
+
+.dashboard-card .btn-outline-danger:hover,
+.dashboard-card .btn-outline-danger:focus {
+    background: rgba(248, 113, 113, 0.15);
+    color: #fff;
+}
+
+.dashboard-banner-thumb {
+    max-width: 120px;
+    max-height: 70px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 12px 25px rgba(5, 10, 48, 0.45);
+}
+
+.dashboard-news-thumb {
+    max-width: 120px;
+    border-radius: 14px;
+    box-shadow: 0 12px 25px rgba(5, 10, 48, 0.35);
+}
+
+.dashboard-news-content {
+    max-width: 420px;
+    color: var(--dashboard-muted);
+}
+
+.dashboard-news-content p:last-child {
+    margin-bottom: 0;
 }
 
 .dashboard-body .btn-primary {

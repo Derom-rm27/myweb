@@ -31,17 +31,12 @@ $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="user-info">
-                            <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                    </li>
+                <ul class="navbar-nav me-auto align-items-lg-center">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-cog me-2"></i>Opciones
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
+                        <ul class="dropdown-menu">
                             <li>
                                 <a class="dropdown-item" href="../index.php">
                                     <i class="fas fa-home me-2"></i>Página Principal
@@ -59,13 +54,6 @@ $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                                 </a>
                             </li>
                             <?php endif; ?>
-                            <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Dar permisos
-                                </a>
-                            </li>
-                            <?php endif; ?>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item text-danger" href="logout.php">
@@ -73,6 +61,13 @@ $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                                 </a>
                             </li>
                         </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="user-info">
+                            <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
                     </li>
                 </ul>
             </div>

@@ -63,29 +63,12 @@ $cn->Close();
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="user.php">Subir banner</a>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canManageNews): ?>
-                        <a class="nav-link" href="news.php">Publicar noticia</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
-                    <?php endif; ?>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="user-info">
-                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </li>
+            <ul class="navbar-nav me-auto align-items-lg-center">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                         <i class="fas fa-cog me-2"></i>Opciones
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu">
                         <li>
                             <a class="dropdown-item" href="../index.php">
                                 <i class="fas fa-home me-2"></i>Página Principal
@@ -103,13 +86,6 @@ $cn->Close();
                             </a>
                         </li>
                         <?php endif; ?>
-                        <?php if ($nivelUsuario === 1): ?>
-                        <li>
-                            <a class="dropdown-item" href="permissions.php">
-                                <i class="fas fa-user-shield me-2"></i>Dar permisos
-                            </a>
-                        </li>
-                        <?php endif; ?>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">
@@ -117,6 +93,23 @@ $cn->Close();
                             </a>
                         </li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="user.php">Subir banner</a>
+                </li>
+                <li class="nav-item">
+                    <?php if ($canManageNews): ?>
+                        <a class="nav-link" href="news.php">Publicar noticia</a>
+                    <?php else: ?>
+                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
+                    <?php endif; ?>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <span class="user-info">
+                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
+                    </span>
                 </li>
             </ul>
         </div>
