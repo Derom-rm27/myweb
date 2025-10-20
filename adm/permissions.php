@@ -104,6 +104,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    if ($action === 'delete_user') {
+        if ($userId === (int)($_SESSION['idUser'] ?? 0)) {
+            $error = urlencode('No puede eliminar su propio usuario.');
+            header("Location: permissions.php?error={$error}&userId={$userId}");
+            exit();
+        }
+
+        if ($nivelObjetivo === 1) {
+            $error = urlencode('No puede eliminar a otro superusuario.');
+            header("Location: permissions.php?error={$error}&userId={$userId}");
+            exit();
+        }
+
+        $conexion->UpdateDb("DELETE FROM usuarios WHERE usersId = {$userId} LIMIT 1");
+
+        $mensaje = urlencode('Usuario eliminado correctamente.');
+        header("Location: permissions.php?mensaje={$mensaje}");
+        exit();
+    }
+
     $error = urlencode('Acción no reconocida.');
     header("Location: permissions.php?error={$error}");
     exit();
@@ -275,6 +295,10 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
             </div>
 
             <?php if ($userData !== null): ?>
+                <?php
+                    $usuarioActualId = (int)($_SESSION['idUser'] ?? 0);
+                    $puedeEliminarUsuario = ((int)($userData['usersId'] ?? 0) !== $usuarioActualId) && ((int)($userData['nivel'] ?? 0) !== 1);
+                ?>
                 <div class="card dashboard-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
@@ -323,6 +347,15 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
                                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#revokeModal">
                                     <i class="fas fa-user-slash me-2"></i>Revocar permisos
                                 </button>
+                                <?php if ($puedeEliminarUsuario): ?>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <i class="fas fa-user-times me-2"></i>Eliminar usuario
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-danger" disabled>
+                                        <i class="fas fa-user-times me-2"></i>Eliminar usuario
+                                    </button>
+                                <?php endif; ?>
                             </div>
                         </form>
                     </div>
@@ -347,6 +380,31 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
                                         <i class="fas fa-user-slash me-2"></i>Revocar permisos
                                     </button>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><i class="fas fa-user-times me-2 text-danger"></i>Eliminar usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-0">Esta acción eliminará al usuario de forma permanente. ¿Desea continuar?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                                <?php if ($puedeEliminarUsuario): ?>
+                                    <form method="post">
+                                        <input type="hidden" name="action" value="delete_user">
+                                        <input type="hidden" name="user_id" value="<?php echo (int)$userData['usersId']; ?>">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-user-times me-2"></i>Eliminar usuario
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
