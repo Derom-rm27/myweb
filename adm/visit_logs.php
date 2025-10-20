@@ -356,10 +356,10 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                 label: 'Visitas',
                                 data: dataPoints,
                                 fill: true,
-                                backgroundColor: 'rgba(168, 85, 247, 0.25)',
-                                borderColor: 'rgba(168, 85, 247, 0.85)',
-                                pointBackgroundColor: '#a855f7',
-                                pointBorderColor: '#ec4899',
+                                backgroundColor: 'rgba(249, 115, 22, 0.18)',
+                                borderColor: 'rgba(249, 115, 22, 0.85)',
+                                pointBackgroundColor: '#f97316',
+                                pointBorderColor: '#facc15',
                                 tension: 0.35,
                                 pointRadius: 4,
                                 pointHoverRadius: 6
@@ -394,8 +394,8 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                 display: false
                             },
                             tooltip: {
-                                backgroundColor: 'rgba(24, 24, 27, 0.92)',
-                                borderColor: 'rgba(168, 85, 247, 0.35)',
+                                backgroundColor: 'rgba(17, 21, 28, 0.96)',
+                                borderColor: 'rgba(249, 115, 22, 0.35)',
                                 borderWidth: 1
                             }
                         }
