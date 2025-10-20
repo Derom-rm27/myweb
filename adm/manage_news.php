@@ -150,88 +150,112 @@ function formatDate(?string $date): string
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-<nav class="navbar navbar-expand-lg dashboard-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="#">Panel de Control</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">Panel de control</h1>
+            <p class="sidebar-subtitle">Gestiona el contenido de manera intuitiva.</p>
+        </div>
+        <div class="sidebar-user">
+            <div class="sidebar-user-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="sidebar-user-info">
+                <span class="sidebar-user-label">Conectado como</span>
+                <span class="sidebar-user-name"><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <h2 class="sidebar-section-title">Acciones rápidas</h2>
+            <ul class="sidebar-menu">
+                <li>
                     <?php if ($canUploadBanner): ?>
-                        <a class="nav-link" href="user.php">Subir banner</a>
+                        <a class="sidebar-link" href="user.php">
+                            <i class="fas fa-upload"></i>
+                            <span>Subir banner</span>
+                        </a>
                     <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Subir banner</a>
+                        <span class="sidebar-link disabled">
+                            <i class="fas fa-upload"></i>
+                            <span>Subir banner</span>
+                        </span>
                     <?php endif; ?>
                 </li>
-                <li class="nav-item">
+                <li>
                     <?php if ($canPublishNews): ?>
-                        <a class="nav-link" href="news.php">Publicar noticia</a>
+                        <a class="sidebar-link" href="news.php">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Publicar noticia</span>
+                        </a>
                     <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
+                        <span class="sidebar-link disabled">
+                            <i class="fas fa-newspaper"></i>
+                            <span>Publicar noticia</span>
+                        </span>
                     <?php endif; ?>
                 </li>
-                <li class="nav-item">
+                <li>
                     <?php if ($canManageBanners): ?>
-                        <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
+                        <a class="sidebar-link" href="manage_banners.php">
+                            <i class="fas fa-images"></i>
+                            <span>Gestionar banners</span>
+                        </a>
                     <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar banners</a>
+                        <span class="sidebar-link disabled">
+                            <i class="fas fa-images"></i>
+                            <span>Gestionar banners</span>
+                        </span>
                     <?php endif; ?>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="manage_news.php">Gestionar noticias</a>
-                </li>
-
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="user-info">
-                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-cog me-2"></i>Opciones
+                <li>
+                    <a class="sidebar-link active" href="manage_news.php">
+                        <i class="fas fa-edit"></i>
+                        <span>Gestionar noticias</span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="../index.php">
-                                <i class="fas fa-home me-2"></i>Página Principal
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
-                                <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                            </a>
-                        </li>
-                        <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="visit_logs.php">
-                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="logout.php">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="sidebar-footer">
+            <h2 class="sidebar-section-title">Configuración</h2>
+            <ul class="sidebar-menu">
+                <li>
+                    <a class="sidebar-link" href="../index.php">
+                        <i class="fas fa-home"></i>
+                        <span>Página principal</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sidebar-link" href="cambiar_password.php">
+                        <i class="fas fa-key"></i>
+                        <span>Cambiar contraseña</span>
+                    </a>
+                </li>
+                <?php if ($nivelUsuario === 1): ?>
+                    <li>
+                        <a class="sidebar-link" href="permissions.php">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Otorgar permisos</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="sidebar-link" href="visit_logs.php">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Registro de visitas</span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <li>
+                    <a class="sidebar-link text-danger" href="logout.php">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar sesión</span>
+                    </a>
                 </li>
             </ul>
         </div>
-    </div>
-</nav>
+    </aside>
 
-<main class="dashboard-main">
-    <div class="container">
+    <main class="dashboard-main">
+        <div class="dashboard-main-inner">
         <?php if ($flashMessage !== ''): ?>
             <div class="alert alert-success alert-dismissible fade show dashboard-alert" role="alert">
                 <i class="fas fa-check-circle me-2"></i>
@@ -334,7 +358,8 @@ function formatDate(?string $date): string
             </div>
         </div>
     </div>
-</main>
+    </main>
+</div>
 
 <div class="modal fade" id="editNewsModal" tabindex="-1" aria-labelledby="editNewsLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
