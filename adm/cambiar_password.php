@@ -59,6 +59,11 @@ $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
                                 </a>
                             </li>
                             <li>
+                                <a class="dropdown-item" href="create_user.php">
+                                    <i class="fas fa-user-plus me-2"></i>Crear usuario
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item" href="visit_logs.php">
                                     <i class="fas fa-chart-bar me-2"></i>Registro de visitas
                                 </a>
