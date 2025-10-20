@@ -1,21 +1,13 @@
 <?php
-session_start();
+declare(strict_types=1);
 
-if (!isset($_SESSION['login'])) {
-    header('location:login.php');
-    exit();
-}
+require_once __DIR__ . '/includes/navigation.php';
+require_once __DIR__ . '/repositories/AdminUserRepository.php';
 
-$nivelUsuario = (int)($_SESSION['nivel'] ?? 0);
-if ($nivelUsuario !== 1) {
-    $mensaje = urlencode('No tiene permisos para administrar otros usuarios.');
-    header("Location: user.php?error={$mensaje}");
-    exit();
-}
+adminRequireSuperuser();
 
-require_once __DIR__ . '/script/conex.php';
-
-$conexion = new MySQLcn();
+$conexion    = adminCreateConnection();
+$usuarioRepo = new AdminUserRepository($conexion);
 
 $mensajeFlash = isset($_GET['mensaje']) ? trim((string)$_GET['mensaje']) : '';
 $errorFlash   = isset($_GET['error']) ? trim((string)$_GET['error']) : '';
@@ -40,35 +32,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userIdSan = is_string($userIdRaw) ? preg_replace('/[^0-9]/', '', $userIdRaw) : '';
 
     if ($userIdSan === '') {
-        $error = urlencode('Debe proporcionar un ID de usuario válido.');
-        header("Location: permissions.php?error={$error}");
-        exit();
+        adminRedirect('permissions.php', ['error' => 'Debe proporcionar un ID de usuario válido.']);
     }
 
     $userId = (int)$userIdSan;
 
     if ($userId <= 0) {
-        $error = urlencode('El ID de usuario proporcionado no es válido.');
-        header("Location: permissions.php?error={$error}");
-        exit();
+        adminRedirect('permissions.php', ['error' => 'El ID de usuario proporcionado no es válido.']);
     }
 
-    $conexion->Query("SELECT usersId, nombres, users, email, nivel, estado, fechaCreada FROM usuarios WHERE usersId = {$userId} LIMIT 1");
-    $rows = $conexion->Rows();
+    $usuarioObjetivo = $usuarioRepo->findById($userId);
 
-    if (count($rows) === 0) {
-        $error = urlencode('No se encontró un usuario con ese ID.');
-        header("Location: permissions.php?error={$error}");
-        exit();
+    if ($usuarioObjetivo === null) {
+        adminRedirect('permissions.php', ['error' => 'No se encontró un usuario con ese ID.']);
     }
 
-    $usuarioObjetivo = $rows[0];
     $nivelObjetivo   = (int)($usuarioObjetivo['nivel'] ?? 0);
+    $usuarioActualId = adminCurrentUserId();
 
-    if ($nivelObjetivo === 1 && $userId !== (int)($_SESSION['idUser'] ?? 0)) {
-        $error = urlencode('No puede modificar los permisos de otro superusuario.');
-        header("Location: permissions.php?error={$error}&userId={$userId}");
-        exit();
+    if ($nivelObjetivo === 1 && $userId !== $usuarioActualId) {
+        adminRedirect('permissions.php', [
+            'error' => 'No puede modificar los permisos de otro superusuario.',
+            'userId' => (string)$userId,
+        ]);
     }
 
     if ($action === 'update_permissions') {
@@ -76,63 +62,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nivel    = is_numeric($nivelRaw) ? (int)$nivelRaw : -1;
 
         if (!in_array($nivel, [0, 1, 2, 3], true)) {
-            $error = urlencode('Debe seleccionar un nivel válido.');
-            header("Location: permissions.php?error={$error}&userId={$userId}");
-            exit();
+            adminRedirect('permissions.php', [
+                'error'  => 'Debe seleccionar un nivel válido.',
+                'userId' => (string)$userId,
+            ]);
         }
 
-        $estado = isset($_POST['estado']) ? 1 : 0;
+        $estado = isset($_POST['estado']);
 
-        $conexion->UpdateDb("UPDATE usuarios SET nivel = {$nivel}, estado = {$estado} WHERE usersId = {$userId} LIMIT 1");
+        $usuarioRepo->updateAccess($userId, $nivel, $estado);
 
-        $mensaje = urlencode('Permisos actualizados correctamente.');
-        header("Location: permissions.php?mensaje={$mensaje}&userId={$userId}");
-        exit();
+        adminRedirect('permissions.php', [
+            'mensaje' => 'Permisos actualizados correctamente.',
+            'userId'  => (string)$userId,
+        ]);
     }
 
     if ($action === 'revoke_permissions') {
-        if ($userId === (int)($_SESSION['idUser'] ?? 0)) {
-            $error = urlencode('No puede revocar sus propios permisos.');
-            header("Location: permissions.php?error={$error}&userId={$userId}");
-            exit();
+        if ($userId === $usuarioActualId) {
+            adminRedirect('permissions.php', [
+                'error'  => 'No puede revocar sus propios permisos.',
+                'userId' => (string)$userId,
+            ]);
         }
 
-        $conexion->UpdateDb("UPDATE usuarios SET nivel = 0, estado = 0 WHERE usersId = {$userId} LIMIT 1");
+        $usuarioRepo->revokeAndDeactivate($userId);
 
-        $mensaje = urlencode('Permisos revocados y usuario desactivado.');
-        header("Location: permissions.php?mensaje={$mensaje}");
-        exit();
+        adminRedirect('permissions.php', ['mensaje' => 'Permisos revocados y usuario desactivado.']);
     }
 
-    $error = urlencode('Acción no reconocida.');
-    header("Location: permissions.php?error={$error}");
-    exit();
+    if ($action === 'delete_user') {
+        if ($userId === $usuarioActualId) {
+            adminRedirect('permissions.php', [
+                'error'  => 'No puede eliminar su propio usuario.',
+                'userId' => (string)$userId,
+            ]);
+        }
+
+        if ($nivelObjetivo === 1) {
+            adminRedirect('permissions.php', [
+                'error'  => 'No puede eliminar a otro superusuario.',
+                'userId' => (string)$userId,
+            ]);
+        }
+
+        $usuarioRepo->deleteUser($userId);
+
+        adminRedirect('permissions.php', ['mensaje' => 'Usuario eliminado correctamente.']);
+    }
+
+    adminRedirect('permissions.php', ['error' => 'Acción no reconocida.']);
 }
 
 if ($userIdQuery !== '' || $usernameQuery !== '') {
     if ($userIdQuery !== '') {
         $userId = (int)$userIdQuery;
         if ($userId > 0) {
-            $conexion->Query("SELECT usersId, nombres, users, email, nivel, estado, fechaCreada FROM usuarios WHERE usersId = {$userId} LIMIT 1");
-            $rows = $conexion->Rows();
-            if (count($rows) === 1) {
-                $userData       = $rows[0];
+            $userData = $usuarioRepo->findById($userId);
+            if ($userData !== null) {
                 $usernameInput = $userData['users'] ?? $usernameInput;
             } else {
                 $errorFlash = $errorFlash !== '' ? $errorFlash : 'No se encontró un usuario con ese ID.';
             }
         }
     } elseif ($usernameQuery !== '') {
-        $usernameEscaped = $conexion->SecureInput($usernameQuery);
-        $conexion->Query(
-            "SELECT usersId, nombres, users, email, nivel, estado, fechaCreada FROM usuarios " .
-            "WHERE (LOWER(users) LIKE LOWER('%{$usernameEscaped}%') OR LOWER(nombres) LIKE LOWER('%{$usernameEscaped}%')) " .
-            "ORDER BY estado DESC, usersId ASC LIMIT 1"
-        );
-        $rows = $conexion->Rows();
-        if (count($rows) === 1) {
-            $userData    = $rows[0];
-            $userIdQuery = (string)($userData['usersId'] ?? $userIdQuery);
+        $userData = $usuarioRepo->findFirstByUsernameOrName($usernameQuery);
+        if ($userData !== null) {
+            $userIdQuery    = (string)($userData['usersId'] ?? $userIdQuery);
             $usernameInput = $userData['users'] ?? $usernameInput;
         } else {
             $errorFlash = $errorFlash !== '' ? $errorFlash : 'No se encontró un usuario con ese nombre.';
@@ -142,14 +138,16 @@ if ($userIdQuery !== '' || $usernameQuery !== '') {
     $errorFlash = $errorFlash !== '' ? $errorFlash : 'Debe ingresar un ID o nombre de usuario para realizar la búsqueda.';
 }
 
+if (is_object($conexion) && method_exists($conexion, 'Close')) {
+    $conexion->Close();
+}
+
 $nivelesDisponibles = [
     ['valor' => 0, 'etiqueta' => 'Sin permisos (deshabilitado)'],
     ['valor' => 1, 'etiqueta' => 'Nivel 1 - Superadministrador'],
     ['valor' => 2, 'etiqueta' => 'Nivel 2 - Puede subir banners'],
     ['valor' => 3, 'etiqueta' => 'Nivel 3 - Puede publicar noticias'],
 ];
-
-$nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -162,62 +160,7 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-<nav class="navbar navbar-expand-lg dashboard-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="#">Panel de Control</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="user.php">Subir banner</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="news.php">Publicar noticia</a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="user-info">
-                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-cog me-2"></i>Opciones
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="../index.php">
-                                <i class="fas fa-home me-2"></i>Página Principal
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
-                                <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                            </a>
-                        </li>
-                        <?php if (in_array($nivelUsuario, [1, 2], true)): ?>
-                        <li>
-                            <a class="dropdown-item" href="banners.php">
-                                <i class="fas fa-images me-2"></i>Gestionar banners
-                            </a>
-                        </li>
-                        <?php endif; ?>
-
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="logout.php">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<?php adminRenderNavbar('', 'permissions'); ?>
 
 <main class="dashboard-main">
 <div class="container">
@@ -270,6 +213,10 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
             </div>
 
             <?php if ($userData !== null): ?>
+                <?php
+                    $usuarioActualId = adminCurrentUserId();
+                    $puedeEliminarUsuario = ((int)($userData['usersId'] ?? 0) !== $usuarioActualId) && ((int)($userData['nivel'] ?? 0) !== 1);
+                ?>
                 <div class="card dashboard-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div>
@@ -318,6 +265,15 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
                                 <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#revokeModal">
                                     <i class="fas fa-user-slash me-2"></i>Revocar permisos
                                 </button>
+                                <?php if ($puedeEliminarUsuario): ?>
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <i class="fas fa-user-times me-2"></i>Eliminar usuario
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-danger" disabled>
+                                        <i class="fas fa-user-times me-2"></i>Eliminar usuario
+                                    </button>
+                                <?php endif; ?>
                             </div>
                         </form>
                     </div>
@@ -342,6 +298,31 @@ $nombreUsuario = $_SESSION['nombre'] ?? 'Super Admin';
                                         <i class="fas fa-user-slash me-2"></i>Revocar permisos
                                     </button>
                                 </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><i class="fas fa-user-times me-2 text-danger"></i>Eliminar usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="mb-0">Esta acción eliminará al usuario de forma permanente. ¿Desea continuar?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                                <?php if ($puedeEliminarUsuario): ?>
+                                    <form method="post">
+                                        <input type="hidden" name="action" value="delete_user">
+                                        <input type="hidden" name="user_id" value="<?php echo (int)$userData['usersId']; ?>">
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-user-times me-2"></i>Eliminar usuario
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

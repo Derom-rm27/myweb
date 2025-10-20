@@ -176,6 +176,22 @@ CREATE TABLE noticias (
   PRIMARY KEY (idNoticia)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- Registro de visitas al panel
+DROP TABLE IF EXISTS registro_visitas;
+CREATE TABLE registro_visitas (
+  visitaId     INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  usersId      INT(9) NOT NULL,
+  nivel        TINYINT UNSIGNED NOT NULL,
+  dispositivo  VARCHAR(50) NOT NULL,
+  navegador    VARCHAR(120) NOT NULL,
+  ip           VARCHAR(45) NOT NULL DEFAULT '',
+  user_agent   TEXT NOT NULL,
+  fecha_visita DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (visitaId),
+  KEY idx_registro_visitas_fecha (fecha_visita),
+  KEY idx_registro_visitas_usuario (usersId)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 -- =========================================================
 -- 3) SEED RECURSOS, ACCIONES Y PERMISOS
 -- =========================================================
