@@ -224,6 +224,11 @@ $canGrantPermissions = ($nivelUsuario === 1);
                             </a>
                         </li>
                         <li>
+                            <a class="dropdown-item" href="create_user.php">
+                                <i class="fas fa-user-plus me-2"></i>Crear usuario
+                            </a>
+                        </li>
+                        <li>
                             <a class="dropdown-item" href="visit_logs.php">
                                 <i class="fas fa-chart-bar me-2"></i>Registro de visitas
                             </a>
@@ -304,7 +309,14 @@ $canGrantPermissions = ($nivelUsuario === 1);
             <div class="col-12">
                 <div class="card dashboard-card dashboard-chart-card mb-0 d-none" id="chartCard">
                     <div class="card-body">
-                        <h5 class="dashboard-section-title mb-3">Visitas por día</h5>
+                        <div class="dashboard-chart-headline mb-4">
+                            <div>
+                                <h5 class="dashboard-section-title mb-1">Visitas por día</h5>
+                                <p class="dashboard-chart-subtitle mb-0">Comparativa visual del periodo seleccionado</p>
+                            </div>
+                            <div class="dashboard-chart-summary" id="chartSummary"></div>
+                        </div>
+                        <div class="chart-legend d-none mb-4" id="chartLegend"></div>
                         <div class="dashboard-chart-container">
                             <canvas id="visitsChart"></canvas>
                         </div>
@@ -394,8 +406,130 @@ $canGrantPermissions = ($nivelUsuario === 1);
         const dataPoints = <?php echo json_encode($chartDataPoints, JSON_UNESCAPED_UNICODE); ?>;
         const toggleButton = document.getElementById('toggleChart');
         const chartCard = document.getElementById('chartCard');
+        const legendContainer = document.getElementById('chartLegend');
+        const summaryElement = document.getElementById('chartSummary');
         const hasData = Array.isArray(labels) && labels.length > 0 && Array.isArray(dataPoints) && dataPoints.length > 0;
+        const numericData = hasData ? dataPoints.map((value) => Number(value) || 0) : [];
+        const baseColors = ['#9C6BFF', '#5AC8FF', '#FFB547', '#FF7088', '#66E5B5'];
+        const hoverColors = ['#B59CFF', '#8DDFFF', '#FFD173', '#FFA1B0', '#8EF1CA'];
+        const datasetColors = hasData ? labels.map((_, index) => baseColors[index % baseColors.length]) : [];
+        const datasetHoverColors = hasData ? labels.map((_, index) => hoverColors[index % hoverColors.length]) : [];
+        const numberFormatter = new Intl.NumberFormat('es-CL');
         let chartInstance = null;
+
+        const gradientBackgroundPlugin = {
+            id: 'gradientBackground',
+            beforeDraw(chart) {
+                if (!chart.chartArea) {
+                    return;
+                }
+
+                const { ctx, chartArea } = chart;
+                const { left, top, right, bottom } = chartArea;
+                const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+                gradient.addColorStop(0, 'rgba(70, 52, 161, 0.9)');
+                gradient.addColorStop(1, 'rgba(22, 24, 74, 0.95)');
+
+                ctx.save();
+                ctx.fillStyle = gradient;
+                ctx.fillRect(left, top, right - left, bottom - top);
+                ctx.restore();
+            }
+        };
+
+        const barDataLabelPlugin = {
+            id: 'barDataLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx, data } = chart;
+                const dataset = data.datasets[0];
+
+                if (!dataset) {
+                    return;
+                }
+
+                ctx.save();
+                ctx.font = '600 13px "Inter", "Segoe UI", sans-serif';
+                ctx.fillStyle = '#ffffff';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                chart.getDatasetMeta(0).data.forEach((element, index) => {
+                    if (!element) {
+                        return;
+                    }
+
+                    const value = dataset.data[index];
+                    if (value === undefined || value === null) {
+                        return;
+                    }
+
+                    const { x, y } = element.tooltipPosition();
+                    ctx.fillText(numberFormatter.format(value), x, y - 12);
+                });
+
+                ctx.restore();
+            }
+        };
+
+        const buildLegend = () => {
+            if (!legendContainer) {
+                return;
+            }
+
+            const legendItems = labels
+                .map((label, index) => ({
+                    label,
+                    value: numericData[index] ?? 0,
+                    color: datasetColors[index % datasetColors.length]
+                }))
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 5);
+
+            if (legendItems.length === 0) {
+                legendContainer.classList.add('d-none');
+                legendContainer.innerHTML = '';
+                return;
+            }
+
+            legendContainer.classList.remove('d-none');
+            legendContainer.innerHTML = legendItems.map((item) => `
+                <div class="chart-legend-item">
+                    <span class="chart-legend-dot" style="background: ${item.color};"></span>
+                    <div>
+                        <span class="chart-legend-label">${item.label}</span>
+                        <span class="chart-legend-value">${numberFormatter.format(item.value)} visitas</span>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        const updateSummary = () => {
+            if (!summaryElement) {
+                return;
+            }
+
+            if (numericData.length === 0) {
+                summaryElement.textContent = '';
+                return;
+            }
+
+            const totalVisitas = numericData.reduce((acum, valor) => acum + valor, 0);
+            const maxVisitas = Math.max(...numericData);
+            const indiceMaximo = numericData.indexOf(maxVisitas);
+            const diaMasAlto = indiceMaximo >= 0 ? labels[indiceMaximo] : '';
+
+            const partes = [
+                `<span class="chart-summary-total">${numberFormatter.format(totalVisitas)}</span> visitas totales`,
+            ];
+
+            if (maxVisitas > 0 && diaMasAlto) {
+                partes.push(`<span class="chart-summary-highlight">${numberFormatter.format(maxVisitas)}</span> el ${diaMasAlto}`);
+            } else {
+                partes.push('Sin picos destacados en el periodo');
+            }
+
+            summaryElement.innerHTML = partes.join('<br>');
+        };
 
         if (!toggleButton) {
             return;
@@ -404,6 +538,9 @@ $canGrantPermissions = ($nivelUsuario === 1);
         if (!hasData) {
             toggleButton.classList.add('disabled');
             toggleButton.setAttribute('disabled', 'disabled');
+        } else {
+            updateSummary();
+            buildLegend();
         }
 
         toggleButton.addEventListener('click', function () {
@@ -423,44 +560,58 @@ $canGrantPermissions = ($nivelUsuario === 1);
 
                 const contexto = canvas.getContext('2d');
                 chartInstance = new Chart(contexto, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [
                             {
                                 label: 'Visitas',
-                                data: dataPoints,
-                                fill: true,
-                                backgroundColor: 'rgba(64, 196, 255, 0.25)',
-                                borderColor: 'rgba(64, 196, 255, 0.85)',
-                                pointBackgroundColor: '#40c4ff',
-                                pointBorderColor: '#40c4ff',
-                                tension: 0.35,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
+                                data: numericData,
+                                backgroundColor: datasetColors,
+                                hoverBackgroundColor: datasetHoverColors,
+                                borderRadius: 16,
+                                borderSkipped: false,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.55
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                top: 32,
+                                bottom: 16,
+                                left: 12,
+                                right: 12
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
                                     color: '#f1f5ff',
-                                    precision: 0
+                                    precision: 0,
+                                    padding: 12
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.08)'
+                                    color: 'rgba(255, 255, 255, 0.12)',
+                                    drawBorder: false
                                 }
                             },
                             x: {
                                 ticks: {
-                                    color: '#f1f5ff'
+                                    color: '#f1f5ff',
+                                    maxRotation: 0,
+                                    minRotation: 0,
+                                    padding: 8
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.04)'
+                                    display: false
+                                },
+                                border: {
+                                    display: false
                                 }
                             }
                         },
@@ -469,12 +620,29 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                 display: false
                             },
                             tooltip: {
-                                backgroundColor: 'rgba(12, 23, 64, 0.92)',
-                                borderColor: 'rgba(64, 196, 255, 0.35)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(16, 21, 58, 0.95)',
+                                borderColor: 'rgba(136, 160, 255, 0.4)',
+                                borderWidth: 1,
+                                padding: 12,
+                                titleColor: '#d7e1ff',
+                                bodyColor: '#ffffff',
+                                callbacks: {
+                                    title(items) {
+                                        return items[0]?.label ?? '';
+                                    },
+                                    label(contexto) {
+                                        const valor = contexto.parsed.y ?? 0;
+                                        return `${numberFormatter.format(valor)} visitas`;
+                                    }
+                                }
                             }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
                         }
-                    }
+                    },
+                    plugins: [gradientBackgroundPlugin, barDataLabelPlugin]
                 });
             }
         });
