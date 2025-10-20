@@ -19,10 +19,10 @@ $truncate = static function (string $text, int $length = 180): string {
 ?>
 <section id="news" class="news-section py-5">
     <div class="container">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 section-header">
             <div>
-                <p class="text-uppercase text-muted mb-1">Noticias</p>
-                <h2 class="mb-0">Últimas publicaciones</h2>
+                <p class="section-eyebrow mb-1">Noticias</p>
+                <h2 class="section-title mb-0">Últimas publicaciones</h2>
             </div>
             <a href="#news" class="btn btn-outline-primary mt-3 mt-md-0 disabled" aria-disabled="true">
                 Gestión en construcción
@@ -43,7 +43,7 @@ $truncate = static function (string $text, int $length = 180): string {
                     $link    = $linkRaw !== '' ? htmlspecialchars($linkRaw, ENT_QUOTES, 'UTF-8') : '';
                     ?>
                     <div class="col-sm-6 col-lg-4">
-                        <article class="card h-100 shadow-sm border-0">
+                        <article class="card news-card h-100 shadow-sm border-0">
                             <div class="ratio ratio-16x9">
                                 <img
                                     src="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>"
@@ -81,9 +81,9 @@ $truncate = static function (string $text, int $length = 180): string {
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <div class="text-center py-5">
-                <h3 class="fw-semibold">Todavía no hay noticias publicadas</h3>
-                <p class="text-muted mb-0">En cuanto se carguen noticias aparecerán automáticamente aquí.</p>
+            <div class="news-empty-state text-center py-5">
+                <h3 class="news-empty-state__title">Todavía no hay noticias publicadas</h3>
+                <p class="news-empty-state__subtitle mb-0">En cuanto se carguen noticias aparecerán automáticamente aquí.</p>
             </div>
         <?php endif; ?>
     </div>

@@ -1,4 +1,17 @@
 /* Home page specific styles extracted from the previous inline block */
+.landing-page {
+    background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 45%),
+        radial-gradient(circle at bottom left, rgba(55, 65, 81, 0.14), transparent 55%),
+        #05070b;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+.landing-page > section {
+    position: relative;
+    z-index: 1;
+}
+
 .navbar {
     background: linear-gradient(135deg, #080a0f 0%, #111820 50%, #1b252f 100%) !important;
     backdrop-filter: blur(10px);
@@ -171,6 +184,47 @@
     box-shadow: 0 10px 25px rgba(249, 115, 22, 0.4);
 }
 
+.btn-outline-primary {
+    color: #f8fafc;
+    border-color: rgba(249, 115, 22, 0.6);
+    background: rgba(249, 115, 22, 0.08);
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    color: #0f172a;
+    background: linear-gradient(135deg, #f97316 0%, #facc15 100%);
+    border-color: transparent;
+    box-shadow: 0 16px 32px rgba(249, 115, 22, 0.4);
+}
+
+.section-header {
+    color: #f8fafc;
+}
+
+.section-eyebrow {
+    display: inline-block;
+    font-size: 0.85rem;
+    letter-spacing: 0.3rem;
+    text-transform: uppercase;
+    color: rgba(250, 204, 21, 0.8);
+}
+
+.section-title {
+    font-size: clamp(1.75rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 0.65rem;
+}
+
+.section-subtitle {
+    max-width: 720px;
+    margin: 0 auto;
+    color: rgba(226, 232, 240, 0.75);
+    line-height: 1.7;
+}
+
 @media (max-width: 576px) {
     .carousel-caption {
         bottom: 140px;
@@ -224,29 +278,27 @@
 
 
 .news-section {
-    background: linear-gradient(135deg, #0b1016 0%, #111a23 45%, #090f15 100%);
     position: relative;
+    background: linear-gradient(155deg, rgba(8, 10, 15, 0.92) 0%, rgba(9, 13, 19, 0.95) 45%, rgba(17, 24, 32, 0.98) 100%);
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.12);
     color: rgba(226, 232, 240, 0.92);
 }
 
 .news-section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background:
-        radial-gradient(ellipse 320px 160px at 20% 80%, rgba(249, 115, 22, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 220px 120px at 80% 20%, rgba(71, 85, 105, 0.2) 0%, transparent 55%);
+        radial-gradient(ellipse 380px 180px at 18% 82%, rgba(249, 115, 22, 0.14) 0%, transparent 65%),
+        radial-gradient(ellipse 260px 140px at 82% 20%, rgba(71, 85, 105, 0.24) 0%, transparent 60%);
     pointer-events: none;
+    z-index: 0;
 }
 
-.news-section h2 {
-    color: #f97316;
-    font-weight: 700;
-    text-shadow: 0 0 18px rgba(249, 115, 22, 0.3);
+.news-section .container {
     position: relative;
+    z-index: 1;
 }
 
 .news-section .ratio {
@@ -263,7 +315,7 @@
 .news-section .card-subtitle {
     letter-spacing: 0.03em;
     text-transform: uppercase;
-    color: rgba(148, 163, 184, 0.8);
+    color: rgba(203, 213, 225, 0.65);
 }
 
 .news-section .btn-link {
@@ -281,53 +333,213 @@
     color: rgba(148, 163, 184, 0.75) !important;
 }
 
-.card {
-    border: none;
-    border-radius: 16px;
-    background: rgba(11, 16, 23, 0.92);
-    box-shadow: 0 5px 25px rgba(8, 10, 15, 0.35);
-    transition: all 0.3s ease;
-    overflow: hidden;
+.news-card {
+    background: rgba(10, 16, 24, 0.8);
+    border: 1px solid rgba(71, 85, 105, 0.35) !important;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(8, 10, 15, 0.4);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(249, 115, 22, 0.55) !important;
+    box-shadow: 0 22px 45px rgba(8, 10, 15, 0.55);
+}
+
+.news-card .card-title {
+    color: #f8fafc;
+    font-weight: 600;
+}
+
+.news-card .card-text {
+    color: rgba(226, 232, 240, 0.85);
+}
+
+.news-empty-state__title {
+    color: #f8fafc;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.news-empty-state__subtitle {
+    color: rgba(203, 213, 225, 0.75);
+}
+
+.services-section {
     position: relative;
-    color: rgba(226, 232, 240, 0.92);
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    overflow: hidden;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 18px 40px rgba(249, 115, 22, 0.22);
-}
-
-.card::before {
+.services-section::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, #f97316, #ea580c);
-    z-index: 1;
+    inset: 0;
+    background: radial-gradient(ellipse 400px 200px at 15% 20%, rgba(249, 115, 22, 0.12), transparent 65%),
+        radial-gradient(ellipse 480px 260px at 80% 20%, rgba(15, 23, 42, 0.55), transparent 70%);
+    z-index: -1;
+    opacity: 0.9;
 }
 
-.card-title {
+.services-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.service-card {
+    background: rgba(12, 18, 26, 0.85);
+    border: 1px solid rgba(71, 85, 105, 0.35);
+    border-radius: 20px;
+    padding: 36px 28px;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(249, 115, 22, 0.55);
+    box-shadow: 0 22px 45px rgba(8, 10, 15, 0.55);
+}
+
+.service-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.service-card__icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(250, 204, 21, 0.15));
+    color: #f97316;
+    font-size: 1.6rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 10px 25px rgba(249, 115, 22, 0.18);
+}
+
+.service-card__icon i {
+    font-size: 1.35rem;
+}
+
+.service-card__title {
+    font-size: 1.35rem;
+    font-weight: 600;
     color: #f8fafc;
 }
 
-.card-text {
-    color: rgba(203, 213, 225, 0.88);
+.service-card__text {
+    color: rgba(226, 232, 240, 0.75);
+    line-height: 1.7;
 }
 
-.card-body .btn-primary {
-    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-    border: none;
-    border-radius: 25px;
-    padding: 10px 20px;
+.contact-section {
+    position: relative;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    overflow: hidden;
+    color: rgba(226, 232, 240, 0.9);
+}
+
+.contact-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(8, 10, 15, 0.92), rgba(11, 19, 28, 0.96));
+    z-index: -2;
+}
+
+.contact-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 18% 42%, rgba(249, 115, 22, 0.18), transparent 55%),
+        radial-gradient(circle at 82% 68%, rgba(55, 65, 81, 0.28), transparent 60%);
+    z-index: -1;
+}
+
+.contact-benefits {
+    color: rgba(226, 232, 240, 0.72);
+    font-size: 0.95rem;
+    line-height: 1.8;
+}
+
+.contact-section .section-subtitle {
+    margin: 0;
+}
+
+.contact-benefits i {
+    color: #f97316;
+    margin-right: 12px;
+    font-size: 1rem;
+}
+
+.contact-card {
+    background: rgba(12, 18, 26, 0.85);
+    border-radius: 24px;
+    border: 1px solid rgba(71, 85, 105, 0.35);
+    overflow: hidden;
+    position: relative;
+}
+
+.contact-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.12), transparent 60%);
+    opacity: 0.65;
+    pointer-events: none;
+}
+
+.contact-card__body {
+    position: relative;
+    z-index: 1;
+    padding: 48px 40px;
+}
+
+.contact-card__title {
+    color: #f8fafc;
     font-weight: 600;
-    transition: all 0.3s ease;
+    margin-bottom: 24px;
 }
 
-.card-body .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
+.contact-form .form-control {
+    background: rgba(15, 23, 32, 0.78);
+    border: 1px solid rgba(71, 85, 105, 0.45);
+    color: #f8fafc;
+}
+
+.contact-form .form-control:focus {
+    border-color: rgba(249, 115, 22, 0.6);
+    box-shadow: 0 0 0 0.25rem rgba(249, 115, 22, 0.18);
+    background: rgba(15, 23, 32, 0.9);
+}
+
+.contact-form .form-floating > label {
+    color: rgba(203, 213, 225, 0.7);
+}
+
+.contact-form .form-floating > .form-control:focus ~ label,
+.contact-form .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: rgba(249, 115, 22, 0.8);
+}
+
+.contact-form textarea.form-control {
+    min-height: 160px;
+}
+
+.contact-form .btn-primary {
+    font-size: 1rem;
+    padding: 14px 20px;
+}
+
+.contact-section .alert {
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    background: rgba(15, 23, 32, 0.75);
+    color: rgba(226, 232, 240, 0.85);
 }
 
 .modal-overlay {
@@ -615,5 +827,13 @@
     .login-btn {
         padding: 16px;
         font-size: 16px;
+    }
+
+    .contact-card__body {
+        padding: 32px 24px;
+    }
+
+    .service-card {
+        padding: 28px 24px;
     }
 }

@@ -5,7 +5,7 @@ $pageTitle = 'Calidad de Software';
 include __DIR__ . '/includes/layout/header.php';
 ?>
 
-<main>
+<main class="landing-page">
     <?php include __DIR__ . '/includes/components/banner-carousel.php'; ?>
     <?php include __DIR__ . '/includes/components/news-section.php'; ?>
     <?php include __DIR__ . '/includes/components/services-section.php'; ?>
