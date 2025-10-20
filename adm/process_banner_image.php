@@ -8,7 +8,7 @@ if (!isset($_SESSION['login'])) {
 }
 
 // Incluir archivo de conexión
-require_once("script/conex.php");
+require_once 'script/database_connection.php';
 
 // Verificar si se envió el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

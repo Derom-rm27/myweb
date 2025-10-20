@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-require_once 'script/conex.php';
+require_once 'script/database_connection.php';
 
 $titulo    = trim($_POST['titulo'] ?? '');
 $contenido = trim($_POST['contenido'] ?? '');

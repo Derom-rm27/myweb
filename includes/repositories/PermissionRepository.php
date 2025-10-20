@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../adm/script/conex.php';
+require_once __DIR__ . '/../../adm/script/database_connection.php';
 
 /**
  * Repository dedicated to checking and managing user permissions for admin modules.

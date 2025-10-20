@@ -95,18 +95,22 @@ if ($permissionConnection !== null) {
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
+                            <a class="dropdown-item" href="change_password.php">
                                 <i class="fas fa-key me-2"></i>Cambiar Contraseña
                             </a>
                         </li>
-                        <?php if (in_array($nivelUsuario, [1, 2], true)): ?>
-                        <li>
-                            <a class="dropdown-item" href="banners.php">
-                                <i class="fas fa-images me-2"></i>Gestionar banners
-                            </a>
-                        </li>
+                        <?php if ($nivelUsuario === 1): ?>
+                            <li>
+                                <a class="dropdown-item" href="permissions.php">
+                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="visit_logs.php">
+                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
+                                </a>
+                            </li>
                         <?php endif; ?>
-
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">
@@ -143,7 +147,7 @@ if ($permissionConnection !== null) {
                     <h4 class="mb-0">Publicar nueva noticia</h4>
                 </div>
                 <div class="card-body">
-                    <form action="procesar_noticia.php" method="POST" enctype="multipart/form-data">
+                    <form action="process_news.php" method="POST" enctype="multipart/form-data">
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <label for="titulo" class="form-label mb-0">Título</label>

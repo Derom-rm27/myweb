@@ -178,7 +178,7 @@ function apliLink(){
   }
   if((dato01!="")&&(dato02!="")&&(dato03!="")&&(dato04!="")&&(dato06!="")&&(dato07!="")){
 	if(dato04=="adjunto") dato05="adjunto/"+archivo;
-	cargarCont('contenido','script/generax.php?apliLinks='+idGuarde +'&dato00='+dato00 +'&dato01='+dato01 +'&dato02='+dato02 +'&dato03='+dato03 +'&dato04='+dato04 +'&dato05='+dato05 +'&dato06='+dato06 +'&dato07='+dato07 +'&dato08='+dato08 +'&dato09='+dato09);
+	cargarCont('contenido','script/captcha_image.php?apliLinks='+idGuarde +'&dato00='+dato00 +'&dato01='+dato01 +'&dato02='+dato02 +'&dato03='+dato03 +'&dato04='+dato04 +'&dato05='+dato05 +'&dato06='+dato06 +'&dato07='+dato07 +'&dato08='+dato08 +'&dato09='+dato09);
   }else{
 	document.getElementById(error).innerHTML = mensaje;
   }
@@ -198,7 +198,7 @@ function apliHojaSec(){
 	error="ErrorRptMen";
   }
   if(dato02!=""){
-	cargarCont('contenido','script/generax.php?apliHojaSec='+idHoja +'&dato1='+dato01 +'&dato2='+dato02 +'&dato3='+dato03);
+	cargarCont('contenido','script/captcha_image.php?apliHojaSec='+idHoja +'&dato1='+dato01 +'&dato2='+dato02 +'&dato3='+dato03);
   }else{
 	document.getElementById(error).innerHTML = mensaje;
   }
@@ -218,7 +218,7 @@ function guardaPagWeb(){
 	var datoLab = document.getElementById('RptLab').value;
 	var datoInf = document.getElementById('RptInf').value;
 	
-	cargarCont('contenido','script/generax.php?guardaPag='+datoId +'&datoNom='+datoNom +'&datoEsl='+datoEsl +'&datoLog='+datoLog +'&datoCiu='+datoCiu +'&datoDir='+datoDir +'&datoTel='+datoTel +'&datoEma='+datoEma +'&datoHor='+datoHor +'&datoLab='+datoLab +'&datoInf='+datoInf );
+	cargarCont('contenido','script/captcha_image.php?guardaPag='+datoId +'&datoNom='+datoNom +'&datoEsl='+datoEsl +'&datoLog='+datoLog +'&datoCiu='+datoCiu +'&datoDir='+datoDir +'&datoTel='+datoTel +'&datoEma='+datoEma +'&datoHor='+datoHor +'&datoLab='+datoLab +'&datoInf='+datoInf );
 };
 
 
@@ -339,7 +339,7 @@ function IniciarCarga(){
 	}else{
 		if(document.getElementById('Multimedia').value!="")
 		  frm.rptMulti.value=document.getElementById('Multimedia').value;
-		frm.action="generax.php";
+		frm.action="captcha_image.php";
 		frm.submit();
   }
   if(error!="") document.getElementById(dest).innerHTML=error;
@@ -372,7 +372,7 @@ var frm=window.document.myForm;
    dest="mensage";
    error="Debe subir una imagen";
   }else{
-	cargarCont('contenido','script/generax.php?apliCambio='+document.getElementById('idweb').value +'&dato1='+ document.getElementById('adjunte').value +'&dato2='+ document.getElementById('titulo').value + '&dato3='+ document.getElementById('descri').value +'&dato4='+ document.getElementById('links').value +'&dato5='+ document.getElementById('estado').value +'&dato6='+ document.getElementById('iduser').value)
+	cargarCont('contenido','script/captcha_image.php?apliCambio='+document.getElementById('idweb').value +'&dato1='+ document.getElementById('adjunte').value +'&dato2='+ document.getElementById('titulo').value + '&dato3='+ document.getElementById('descri').value +'&dato4='+ document.getElementById('links').value +'&dato5='+ document.getElementById('estado').value +'&dato6='+ document.getElementById('iduser').value)
   }
   if(error!="") document.getElementById(dest).innerHTML=error;
 }
@@ -409,7 +409,7 @@ function IniciarArchivo(){
 	var dato2=frmX.idSecX.value;
 	var dato6=frmX.iduserX.value;
 	frmX.reset();
-	cargarCont('ListarArc','generax.php?ListArc='+dato1+'&idSec='+dato2 +'&idUser='+dato6+'&Empezar=1');
+	cargarCont('ListarArc','captcha_image.php?ListArc='+dato1+'&idSec='+dato2 +'&idUser='+dato6+'&Empezar=1');
 };
 
 

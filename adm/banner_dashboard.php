@@ -17,7 +17,7 @@ if (!isset($_SESSION['login'])) {
     }
 }
 
-require_once __DIR__ . '/script/conex.php';
+require_once __DIR__ . '/script/database_connection.php';
 
 $nivelUsuario = (int)($_SESSION['nivel'] ?? 0);
 if (!in_array($nivelUsuario, [1, 2], true)) {
@@ -92,18 +92,22 @@ $cn->Close();
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
+                            <a class="dropdown-item" href="change_password.php">
                                 <i class="fas fa-key me-2"></i>Cambiar Contraseña
                             </a>
                         </li>
-                        <?php if (in_array($nivelUsuario, [1, 2], true)): ?>
-                        <li>
-                            <a class="dropdown-item" href="banners.php">
-                                <i class="fas fa-images me-2"></i>Gestionar banners
-                            </a>
-                        </li>
+                        <?php if ($nivelUsuario === 1): ?>
+                            <li>
+                                <a class="dropdown-item" href="permissions.php">
+                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="visit_logs.php">
+                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
+                                </a>
+                            </li>
                         <?php endif; ?>
-
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">
@@ -232,7 +236,7 @@ $cn->Close();
 <div class="modal fade" id="editBannerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <form action="actualizar_banner.php" method="POST" enctype="multipart/form-data">
+            <form action="update_banner.php" method="POST" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Editar banner</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -285,7 +289,7 @@ $cn->Close();
 <div class="modal fade" id="deleteBannerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form action="eliminar_banner.php" method="POST">
+            <form action="delete_banner.php" method="POST">
                 <div class="modal-header">
                     <h5 class="modal-title">Eliminar banner</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>

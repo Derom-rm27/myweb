@@ -201,23 +201,22 @@ function formatDate(?string $date): string
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
+                            <a class="dropdown-item" href="change_password.php">
                                 <i class="fas fa-key me-2"></i>Cambiar Contraseña
                             </a>
                         </li>
-                        <?php if ($canManageBanners): ?>
-                        <li>
-                            <a class="dropdown-item" href="manage_banners.php">
-                                <i class="fas fa-images me-2"></i>Gestionar banners
-                            </a>
-                        </li>
+                        <?php if ($nivelUsuario === 1): ?>
+                            <li>
+                                <a class="dropdown-item" href="permissions.php">
+                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="visit_logs.php">
+                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
+                                </a>
+                            </li>
                         <?php endif; ?>
-                        <li>
-                            <a class="dropdown-item active" href="manage_news.php">
-                                <i class="fas fa-newspaper me-2"></i>Gestionar noticias
-                            </a>
-                        </li>
-
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <a class="dropdown-item text-danger" href="logout.php">

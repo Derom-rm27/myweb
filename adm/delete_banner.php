@@ -6,7 +6,7 @@ if (!isset($_SESSION['login'])) {
     exit();
 }
 
-require_once __DIR__ . '/script/conex.php';
+require_once __DIR__ . '/script/database_connection.php';
 
 $nivelUsuario = (int)($_SESSION['nivel'] ?? 0);
 if (!in_array($nivelUsuario, [1, 2], true)) {
@@ -15,13 +15,13 @@ if (!in_array($nivelUsuario, [1, 2], true)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: banners.php');
+    header('Location: banner_dashboard.php');
     exit();
 }
 
 $idBanner = isset($_POST['idBanner']) ? (int)$_POST['idBanner'] : 0;
 if ($idBanner <= 0) {
-    header('Location: banners.php?error=' . urlencode('Identificador de banner inválido.'));
+    header('Location: banner_dashboard.php?error=' . urlencode('Identificador de banner inválido.'));
     exit();
 }
 
@@ -30,7 +30,7 @@ $cn->Query("SELECT usersId, Imagen FROM banner WHERE idBanner = $idBanner LIMIT 
 
 if ($cn->NumRows() === 0) {
     $cn->Close();
-    header('Location: banners.php?error=' . urlencode('El banner indicado no existe.'));
+    header('Location: banner_dashboard.php?error=' . urlencode('El banner indicado no existe.'));
     exit();
 }
 
@@ -41,7 +41,7 @@ $usuarioId = (int)($_SESSION['idUser'] ?? 0);
 
 if ($nivelUsuario !== 1 && $ownerId !== $usuarioId) {
     $cn->Close();
-    header('Location: banners.php?error=' . urlencode('No tienes permisos para eliminar este banner.'));
+    header('Location: banner_dashboard.php?error=' . urlencode('No tienes permisos para eliminar este banner.'));
     exit();
 }
 
@@ -55,5 +55,5 @@ if ($currentImage) {
     }
 }
 
-header('Location: banners.php?mensaje=' . urlencode('El banner se eliminó correctamente.'));
+header('Location: banner_dashboard.php?mensaje=' . urlencode('El banner se eliminó correctamente.'));
 exit();

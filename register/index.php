@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 session_start();
 
-require_once __DIR__ . '/../adm/script/conex.php';
+require_once __DIR__ . '/../adm/script/database_connection.php';
 
 $errors = [];
 $successMessage = '';

@@ -19,7 +19,7 @@
 
             <div class="form-group">
                 <div class="captcha-group">
-                    <img src="adm/script/generax.php?img=true" alt="Captcha" id="captchaImage" data-base-src="adm/script/generax.php?img=true">
+                    <img src="adm/script/captcha_image.php?img=true" alt="Captcha" id="captchaImage" data-base-src="adm/script/captcha_image.php?img=true">
                     <button type="button" class="refresh-captcha" id="refreshCaptcha" aria-label="Actualizar código de seguridad">⟳</button>
                 </div>
                 <span class="captcha-hint">Haz clic en la imagen o en el botón para actualizar el código.</span>

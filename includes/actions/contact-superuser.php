@@ -66,7 +66,7 @@ if (!empty($errors)) {
     ], $oldInput);
 }
 
-require_once __DIR__ . '/../../adm/script/conex.php';
+require_once __DIR__ . '/../../adm/script/database_connection.php';
 
 try {
     $connection = new MySQLcn();
