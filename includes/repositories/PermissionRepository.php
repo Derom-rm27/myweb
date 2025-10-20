@@ -96,6 +96,73 @@ class PermissionRepository
     }
 
     /**
+     * Create a new user using the admin registration stored procedure.
+     *
+     * @return array{success: bool, message: string, user_id: int|null}
+     */
+    public function createUserAsAdmin(
+        int $adminId,
+        string $fullName,
+        string $username,
+        string $password,
+        string $email,
+        int $level
+    ): array {
+        $link = $this->connection->GetLink();
+        $response = [
+            'success' => false,
+            'message' => 'No fue posible registrar al usuario.',
+            'user_id' => null,
+        ];
+
+        $statement = $link->prepare('CALL RegistrarAdmin(?, ?, ?, ?, ?, ?)');
+
+        if ($statement === false) {
+            $response['message'] = 'No fue posible preparar la solicitud de registro.';
+            return $response;
+        }
+
+        $statement->bind_param('issssi', $adminId, $fullName, $username, $password, $email, $level);
+
+        if (!$statement->execute()) {
+            $statement->close();
+            while ($link->more_results() && $link->next_result()) {
+                // Limpia cualquier resultado pendiente del procedimiento almacenado.
+            }
+            $response['message'] = 'No fue posible ejecutar el registro del usuario.';
+            return $response;
+        }
+
+        $result = $statement->get_result();
+
+        if ($result !== false) {
+            $row = $result->fetch_assoc();
+            $result->free();
+
+            if ($row !== null) {
+                $estado = (string)($row['estado'] ?? '');
+                if ($estado === 'OK') {
+                    $response['success'] = true;
+                    $response['message'] = 'Usuario creado correctamente.';
+                    $response['user_id'] = isset($row['usersId']) ? (int)$row['usersId'] : null;
+                } else {
+                    $response['message'] = (string)($row['mensaje'] ?? 'No fue posible registrar al usuario.');
+                }
+            }
+        } else {
+            $response['message'] = 'La base de datos no devolvió respuesta para el registro.';
+        }
+
+        $statement->close();
+
+        while ($link->more_results() && $link->next_result()) {
+            // Limpia cualquier resultado pendiente del procedimiento almacenado.
+        }
+
+        return $response;
+    }
+
+    /**
      * Check if the user has the provided permission according to the effective permissions view.
      */
     public function userHasPermission(int $userId, string $resource, string $action): bool

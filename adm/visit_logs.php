@@ -422,45 +422,86 @@ $canGrantPermissions = ($nivelUsuario === 1);
                 }
 
                 const contexto = canvas.getContext('2d');
+                const palette = [
+                    '#6D63FF',
+                    '#4FC1FF',
+                    '#FF8F66',
+                    '#7EE0FF',
+                    '#A084FF',
+                    '#FFC94A',
+                    '#4FE3C1',
+                    '#FF66B2'
+                ];
+
+                const backgroundPlugin = {
+                    id: 'dashboardBarBackground',
+                    beforeDraw: (chart) => {
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) {
+                            return;
+                        }
+
+                        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        gradient.addColorStop(0, '#2D1E81');
+                        gradient.addColorStop(1, '#161B3F');
+
+                        ctx.save();
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top);
+                        ctx.restore();
+                    }
+                };
+
                 chartInstance = new Chart(contexto, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [
                             {
                                 label: 'Visitas',
                                 data: dataPoints,
-                                fill: true,
-                                backgroundColor: 'rgba(64, 196, 255, 0.25)',
-                                borderColor: 'rgba(64, 196, 255, 0.85)',
-                                pointBackgroundColor: '#40c4ff',
-                                pointBorderColor: '#40c4ff',
-                                tension: 0.35,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
+                                backgroundColor: labels.map((_, index) => palette[index % palette.length]),
+                                hoverBackgroundColor: labels.map((_, index) => palette[index % palette.length]),
+                                borderWidth: 0,
+                                borderRadius: 18,
+                                borderSkipped: false,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.6
                             }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                top: 10,
+                                right: 16,
+                                bottom: 10,
+                                left: 16
+                            }
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
                                 ticks: {
                                     color: '#f1f5ff',
-                                    precision: 0
+                                    precision: 0,
+                                    padding: 10
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.08)'
+                                    color: 'rgba(255, 255, 255, 0.08)',
+                                    drawBorder: false
                                 }
                             },
                             x: {
                                 ticks: {
-                                    color: '#f1f5ff'
+                                    color: '#f1f5ff',
+                                    padding: 12
                                 },
                                 grid: {
-                                    color: 'rgba(255, 255, 255, 0.04)'
+                                    color: 'rgba(255, 255, 255, 0.04)',
+                                    drawBorder: false
                                 }
                             }
                         },
@@ -469,12 +510,17 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                 display: false
                             },
                             tooltip: {
-                                backgroundColor: 'rgba(12, 23, 64, 0.92)',
-                                borderColor: 'rgba(64, 196, 255, 0.35)',
-                                borderWidth: 1
+                                backgroundColor: 'rgba(20, 30, 74, 0.95)',
+                                borderColor: 'rgba(111, 99, 255, 0.4)',
+                                borderWidth: 1.5,
+                                titleColor: '#E2E8F0',
+                                bodyColor: '#E2E8F0',
+                                padding: 12,
+                                displayColors: false
                             }
                         }
-                    }
+                    },
+                    plugins: [backgroundPlugin]
                 });
             }
         });

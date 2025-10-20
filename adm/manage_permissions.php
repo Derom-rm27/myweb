@@ -19,6 +19,12 @@ require_once __DIR__ . '/../includes/repositories/PermissionRepository.php';
 
 $flashMessage = isset($_GET['mensaje']) ? trim((string) $_GET['mensaje']) : '';
 $flashError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
+$createFormData = [
+    'full_name' => '',
+    'username' => '',
+    'email' => '',
+    'level' => '2',
+];
 
 try {
     $connection = new MySQLcn();
@@ -33,32 +39,97 @@ $allowedResources = ['BANNERS', 'NEWS'];
 $redirectBase = 'manage_permissions.php';
 
 if ($permissionRepository !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $targetUserId = isset($_POST['user_id']) ? (int) $_POST['user_id'] : 0;
-    $resource     = isset($_POST['resource']) ? strtoupper(trim((string) $_POST['resource'])) : '';
-    $allow        = isset($_POST['allow']) && (string) $_POST['allow'] === '1';
+    $action = isset($_POST['action']) ? trim((string) $_POST['action']) : '';
 
-    if ($targetUserId <= 0 || $targetUserId === $usuarioId) {
-        $connection?->Close();
-        header("Location: {$redirectBase}?error=" . urlencode('Debe seleccionar un usuario válido.'));
-        exit();
-    }
+    if ($action === 'create_user') {
+        $fullName = isset($_POST['full_name']) ? trim((string) $_POST['full_name']) : '';
+        $username = isset($_POST['username']) ? trim((string) $_POST['username']) : '';
+        $email    = isset($_POST['email']) ? trim((string) $_POST['email']) : '';
+        $password = isset($_POST['password']) ? trim((string) $_POST['password']) : '';
+        $confirm  = isset($_POST['confirm_password']) ? trim((string) $_POST['confirm_password']) : '';
+        $level    = isset($_POST['level']) ? (int) $_POST['level'] : 0;
 
-    if (!in_array($resource, $allowedResources, true)) {
-        $connection?->Close();
-        header("Location: {$redirectBase}?error=" . urlencode('Recurso seleccionado inválido.'));
-        exit();
-    }
+        $createFormData = [
+            'full_name' => $fullName,
+            'username' => $username,
+            'email' => $email,
+            'level' => (string) $level,
+        ];
 
-    $updated = $permissionRepository->setManageAccess($targetUserId, $resource, $allow);
-    $connection?->Close();
+        $errors = [];
 
-    if ($updated) {
-        $mensaje = $allow ? 'Permiso concedido correctamente.' : 'Permiso revocado correctamente.';
-        header("Location: {$redirectBase}?mensaje=" . urlencode($mensaje));
+        if ($fullName === '' || mb_strlen($fullName) < 3) {
+            $errors[] = 'Ingresa un nombre completo válido (mínimo 3 caracteres).';
+        }
+
+        if ($username === '' || mb_strlen($username) < 4) {
+            $errors[] = 'Ingresa un nombre de usuario válido (mínimo 4 caracteres).';
+        }
+
+        if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Ingresa un correo electrónico válido.';
+        }
+
+        if (!in_array($level, [1, 2, 3], true)) {
+            $errors[] = 'Selecciona un nivel válido.';
+        }
+
+        if ($password === '' || mb_strlen($password) < 6) {
+            $errors[] = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+
+        if ($password !== $confirm) {
+            $errors[] = 'Las contraseñas no coinciden.';
+        }
+
+        if (empty($errors)) {
+            $result = $permissionRepository->createUserAsAdmin(
+                $usuarioId,
+                $fullName,
+                $username,
+                $password,
+                $email,
+                $level
+            );
+
+            if ($result['success']) {
+                $connection?->Close();
+                header("Location: {$redirectBase}?mensaje=" . urlencode($result['message']));
+                exit();
+            }
+
+            $flashError = $result['message'];
+        } else {
+            $flashError = implode(' ', $errors);
+        }
     } else {
-        header("Location: {$redirectBase}?error=" . urlencode('No fue posible actualizar el permiso.'));
+        $targetUserId = isset($_POST['user_id']) ? (int) $_POST['user_id'] : 0;
+        $resource     = isset($_POST['resource']) ? strtoupper(trim((string) $_POST['resource'])) : '';
+        $allow        = isset($_POST['allow']) && (string) $_POST['allow'] === '1';
+
+        if ($targetUserId <= 0 || $targetUserId === $usuarioId) {
+            $connection?->Close();
+            header("Location: {$redirectBase}?error=" . urlencode('Debe seleccionar un usuario válido.'));
+            exit();
+        }
+
+        if (!in_array($resource, $allowedResources, true)) {
+            $connection?->Close();
+            header("Location: {$redirectBase}?error=" . urlencode('Recurso seleccionado inválido.'));
+            exit();
+        }
+
+        $updated = $permissionRepository->setManageAccess($targetUserId, $resource, $allow);
+        $connection?->Close();
+
+        if ($updated) {
+            $mensaje = $allow ? 'Permiso concedido correctamente.' : 'Permiso revocado correctamente.';
+            header("Location: {$redirectBase}?mensaje=" . urlencode($mensaje));
+        } else {
+            header("Location: {$redirectBase}?error=" . urlencode('No fue posible actualizar el permiso.'));
+        }
+        exit();
     }
-    exit();
 }
 
 $users = [];
@@ -230,6 +301,7 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                     </td>
                                     <td class="text-center">
                                         <form method="POST" class="permission-form d-inline">
+                                            <input type="hidden" name="action" value="toggle_permission">
                                             <input type="hidden" name="user_id" value="<?php echo $userId; ?>">
                                             <input type="hidden" name="resource" value="BANNERS">
                                             <input type="hidden" name="allow" value="<?php echo !empty($user['can_manage_banners']) ? '1' : '0'; ?>">
@@ -240,6 +312,7 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                     </td>
                                     <td class="text-center">
                                         <form method="POST" class="permission-form d-inline">
+                                            <input type="hidden" name="action" value="toggle_permission">
                                             <input type="hidden" name="user_id" value="<?php echo $userId; ?>">
                                             <input type="hidden" name="resource" value="NEWS">
                                             <input type="hidden" name="allow" value="<?php echo !empty($user['can_manage_news']) ? '1' : '0'; ?>">
@@ -254,6 +327,75 @@ $canGrantPermissions = ($nivelUsuario === 1);
                         </table>
                     </div>
                 <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="dashboard-card card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1">Crear nuevo usuario</h5>
+                    <p class="dashboard-section-subtitle mb-0">Registra usuarios adicionales y asigna su nivel de acceso.</p>
+                </div>
+                <span class="badge bg-success text-uppercase">Conectado a la base de datos</span>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="row g-3">
+                    <input type="hidden" name="action" value="create_user">
+                    <div class="col-md-6">
+                        <label for="full_name" class="form-label">Nombre completo</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="full_name"
+                            name="full_name"
+                            value="<?php echo htmlspecialchars($createFormData['full_name'], ENT_QUOTES, 'UTF-8'); ?>"
+                            required
+                        >
+                    </div>
+                    <div class="col-md-6">
+                        <label for="username" class="form-label">Usuario</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            id="username"
+                            name="username"
+                            value="<?php echo htmlspecialchars($createFormData['username'], ENT_QUOTES, 'UTF-8'); ?>"
+                            required
+                        >
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <input
+                            type="email"
+                            class="form-control"
+                            id="email"
+                            name="email"
+                            value="<?php echo htmlspecialchars($createFormData['email'], ENT_QUOTES, 'UTF-8'); ?>"
+                            placeholder="Opcional"
+                        >
+                    </div>
+                    <div class="col-md-3">
+                        <label for="level" class="form-label">Nivel</label>
+                        <select class="form-select" id="level" name="level" required>
+                            <option value="1" <?php echo $createFormData['level'] === '1' ? 'selected' : ''; ?>>Superusuario</option>
+                            <option value="2" <?php echo $createFormData['level'] === '2' ? 'selected' : ''; ?>>Banners</option>
+                            <option value="3" <?php echo $createFormData['level'] === '3' ? 'selected' : ''; ?>>Noticias</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="confirm_password" class="form-label">Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i>Crear usuario
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
