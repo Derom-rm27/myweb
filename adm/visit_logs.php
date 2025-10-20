@@ -160,97 +160,22 @@ $canGrantPermissions = ($nivelUsuario === 1);
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-<nav class="navbar navbar-expand-lg dashboard-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="#">Panel de Control</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <?php if ($canUploadBanner): ?>
-                        <a class="nav-link" href="user.php">Subir banner</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Subir banner</a>
-                    <?php endif; ?>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canPublishNews || $canManageNews): ?>
-                        <a class="nav-link" href="news.php">Publicar noticia</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
-                    <?php endif; ?>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canManageBanners): ?>
-                        <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar banners</a>
-                    <?php endif; ?>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canManageNews): ?>
-                        <a class="nav-link" href="manage_news.php">Gestionar noticias</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
-                    <?php endif; ?>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="user-info">
-                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-cog me-2"></i>Opciones
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="../index.php">
-                                <i class="fas fa-home me-2"></i>Página Principal
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
-                                <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="permissions.php">
-                                <i class="fas fa-user-shield me-2"></i>Otorgar permisos
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="visit_logs.php">
-                                <i class="fas fa-chart-bar me-2"></i>Registro de visitas
-                            </a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="logout.php">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div class="dashboard-shell">
+    <?php
+    $activeSidebar = 'visit_logs';
+    require __DIR__ . '/includes/dashboard_sidebar.php';
+    ?>
 
-<main class="dashboard-main">
-    <div class="container">
-        <?php if ($errorDb !== ''): ?>
-            <div class="alert alert-danger alert-dismissible fade show dashboard-alert" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <?php echo htmlspecialchars($errorDb, ENT_QUOTES, 'UTF-8'); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
-        <div class="row g-4">
+    <main class="dashboard-main">
+        <div class="dashboard-main-inner">
+            <?php if ($errorDb !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show dashboard-alert" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php echo htmlspecialchars($errorDb, ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            <div class="row g-4">
             <div class="col-12">
                 <div class="card dashboard-card">
                     <div class="card-header">
@@ -383,8 +308,8 @@ $canGrantPermissions = ($nivelUsuario === 1);
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -431,10 +356,10 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                 label: 'Visitas',
                                 data: dataPoints,
                                 fill: true,
-                                backgroundColor: 'rgba(64, 196, 255, 0.25)',
-                                borderColor: 'rgba(64, 196, 255, 0.85)',
-                                pointBackgroundColor: '#40c4ff',
-                                pointBorderColor: '#40c4ff',
+                                backgroundColor: 'rgba(249, 115, 22, 0.18)',
+                                borderColor: 'rgba(249, 115, 22, 0.85)',
+                                pointBackgroundColor: '#f97316',
+                                pointBorderColor: '#facc15',
                                 tension: 0.35,
                                 pointRadius: 4,
                                 pointHoverRadius: 6
@@ -469,8 +394,8 @@ $canGrantPermissions = ($nivelUsuario === 1);
                                 display: false
                             },
                             tooltip: {
-                                backgroundColor: 'rgba(12, 23, 64, 0.92)',
-                                borderColor: 'rgba(64, 196, 255, 0.35)',
+                                backgroundColor: 'rgba(17, 21, 28, 0.96)',
+                                borderColor: 'rgba(249, 115, 22, 0.35)',
                                 borderWidth: 1
                             }
                         }

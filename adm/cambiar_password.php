@@ -9,6 +9,11 @@ $nivelUsuario   = (int)($_SESSION['nivel'] ?? 0);
 $nombreUsuario  = $_SESSION['nombre'] ?? 'Usuario';
 $mensajeExito   = isset($_GET['mensaje']) ? trim((string) $_GET['mensaje']) : '';
 $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
+
+$canUploadBanner  = in_array($nivelUsuario, [1, 2], true);
+$canPublishNews   = in_array($nivelUsuario, [1, 3], true);
+$canManageBanners = ($nivelUsuario === 1);
+$canManageNews    = ($nivelUsuario === 1);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -23,82 +28,34 @@ $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg dashboard-navbar">
-        <div class="container">
-            <a class="navbar-brand" href="#">Panel de Control</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="user-info">
-                            <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cog me-2"></i>Opciones
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="../index.php">
-                                    <i class="fas fa-home me-2"></i>Página Principal
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item active" href="cambiar_password.php">
-                                    <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                                </a>
-                            </li>
-                        <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="visit_logs.php">
-                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="logout.php">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<div class="dashboard-shell">
+    <?php
+    $activeSidebar = 'change_password';
+    require __DIR__ . '/includes/dashboard_sidebar.php';
+    ?>
 
     <main class="dashboard-main">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card dashboard-card">
-                    <div class="card-header">
-                        <h4 class="mb-0">Cambiar Contraseña</h4>
-                    </div>
-                    <div class="card-body">
-                        <?php if ($mensajeExito !== ''): ?>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($mensajeExito, ENT_QUOTES, 'UTF-8'); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="dashboard-main-inner">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card dashboard-card">
+                        <div class="card-header">
+                            <h4 class="mb-0">Cambiar Contraseña</h4>
                         </div>
-                        <?php endif; ?>
-                        <?php if ($mensajeError !== ''): ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i><?php echo htmlspecialchars($mensajeError, ENT_QUOTES, 'UTF-8'); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        <?php endif; ?>
-                        <form action="procesar_password.php" method="POST" id="passwordForm">
+                        <div class="card-body">
+                            <?php if ($mensajeExito !== ''): ?>
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-check-circle me-2"></i><?php echo htmlspecialchars($mensajeExito, ENT_QUOTES, 'UTF-8'); ?>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($mensajeError !== ''): ?>
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i><?php echo htmlspecialchars($mensajeError, ENT_QUOTES, 'UTF-8'); ?>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <?php endif; ?>
+                            <form action="procesar_password.php" method="POST" id="passwordForm">
                             <div class="mb-3">
                                 <label for="password_actual" class="form-label">Contraseña Actual</label>
                                 <input type="password" class="form-control" id="password_actual" name="password_actual" required>
@@ -126,6 +83,7 @@ $mensajeError   = isset($_GET['error']) ? trim((string) $_GET['error']) : '';
         </div>
     </div>
     </main>
+</div>
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

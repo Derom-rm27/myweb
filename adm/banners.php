@@ -29,7 +29,10 @@ $usuarioId = (int)($_SESSION['idUser'] ?? 0);
 $nombreUsuario = $_SESSION['nombre'] ?? 'Usuario';
 $mensajeFlash = isset($_GET['mensaje']) ? trim((string)$_GET['mensaje']) : '';
 $errorFlash = isset($_GET['error']) ? trim((string)$_GET['error']) : '';
-$canManageNews = in_array($nivelUsuario, [1, 3], true);
+$canUploadBanner  = in_array($nivelUsuario, [1, 2], true);
+$canPublishNews   = in_array($nivelUsuario, [1, 3], true);
+$canManageBanners = ($nivelUsuario === 1);
+$canManageNews    = ($nivelUsuario === 1);
 
 $cn = new MySQLcn();
 
@@ -56,90 +59,31 @@ $cn->Close();
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-<nav class="navbar navbar-expand-lg dashboard-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="#">Panel de Control</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="user.php">Subir banner</a>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canManageNews): ?>
-                        <a class="nav-link" href="news.php">Publicar noticia</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
-                    <?php endif; ?>
-                </li>
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="user-info">
-                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-cog me-2"></i>Opciones
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="../index.php">
-                                <i class="fas fa-home me-2"></i>Página Principal
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
-                                <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                            </a>
-                        </li>
-                        <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="visit_logs.php">
-                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="logout.php">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<div class="dashboard-shell">
+    <?php
+    $activeSidebar = 'manage_banners';
+    require __DIR__ . '/includes/dashboard_sidebar.php';
+    ?>
 
-<main class="dashboard-main">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12">
-                <?php if ($mensajeFlash !== ''): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <?php echo htmlspecialchars($mensajeFlash, ENT_QUOTES, 'UTF-8'); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <?php endif; ?>
-                <?php if ($errorFlash !== ''): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <?php echo htmlspecialchars($errorFlash, ENT_QUOTES, 'UTF-8'); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <?php endif; ?>
-                <div class="card dashboard-card">
+    <main class="dashboard-main">
+        <div class="dashboard-main-inner">
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <?php if ($mensajeFlash !== ''): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <?php echo htmlspecialchars($mensajeFlash, ENT_QUOTES, 'UTF-8'); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($errorFlash !== ''): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <?php echo htmlspecialchars($errorFlash, ENT_QUOTES, 'UTF-8'); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    <div class="card dashboard-card">
                     <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <h4 class="mb-0">Mis banners</h4>
                         <a class="btn btn-primary" href="user.php">
@@ -230,8 +174,8 @@ $cn->Close();
                 </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
+</div>
 
 <div class="modal fade" id="editBannerModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">

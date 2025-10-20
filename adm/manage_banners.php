@@ -150,104 +150,30 @@ function formatDate(?string $date): string
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-<nav class="navbar navbar-expand-lg dashboard-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="#">Panel de Control</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <?php if ($canUploadBanner): ?>
-                        <a class="nav-link" href="user.php">Subir banner</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Subir banner</a>
-                    <?php endif; ?>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canPublishNews || $canManageNews): ?>
-                        <a class="nav-link" href="news.php">Publicar noticia</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
-                    <?php endif; ?>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="manage_banners.php">Gestionar banners</a>
-                </li>
-                <li class="nav-item">
-                    <?php if ($canManageNews): ?>
-                        <a class="nav-link" href="manage_news.php">Gestionar noticias</a>
-                    <?php else: ?>
-                        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
-                    <?php endif; ?>
-                </li>
+<div class="dashboard-shell">
+    <?php
+    $activeSidebar = 'manage_banners';
+    require __DIR__ . '/includes/dashboard_sidebar.php';
+    ?>
 
-            </ul>
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <span class="user-info">
-                        <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-cog me-2"></i>Opciones
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="../index.php">
-                                <i class="fas fa-home me-2"></i>Página Principal
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="cambiar_password.php">
-                                <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                            </a>
-                        </li>
-                        <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="visit_logs.php">
-                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-danger" href="logout.php">
-                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    <main class="dashboard-main">
+        <div class="dashboard-main-inner">
+            <?php if ($flashMessage !== ''): ?>
+                <div class="alert alert-success alert-dismissible fade show dashboard-alert" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?php echo htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+            <?php if ($flashError !== ''): ?>
+                <div class="alert alert-danger alert-dismissible fade show dashboard-alert" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php echo htmlspecialchars($flashError, ENT_QUOTES, 'UTF-8'); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
 
-<main class="dashboard-main">
-    <div class="container">
-        <?php if ($flashMessage !== ''): ?>
-            <div class="alert alert-success alert-dismissible fade show dashboard-alert" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                <?php echo htmlspecialchars($flashMessage, ENT_QUOTES, 'UTF-8'); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
-        <?php if ($flashError !== ''): ?>
-            <div class="alert alert-danger alert-dismissible fade show dashboard-alert" role="alert">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <?php echo htmlspecialchars($flashError, ENT_QUOTES, 'UTF-8'); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
-
-        <div class="dashboard-card card">
+            <div class="dashboard-card card">
             <div class="card-header">
                 <div>
                     <h4 class="dashboard-section-title mb-1">Gestión de banners</h4>
@@ -344,8 +270,8 @@ function formatDate(?string $date): string
                 <?php endif; ?>
             </div>
         </div>
-    </div>
-</main>
+    </main>
+</div>
 
 <div class="modal fade" id="editBannerModal" tabindex="-1" aria-labelledby="editBannerLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
