@@ -31,10 +31,11 @@ $usuarioId = (int) ($_SESSION['idUser'] ?? 0);
 $nombreUsuario = $_SESSION["nombre"] ?? 'Usuario';
 $mensajeFlash = isset($_GET['mensaje']) ? trim((string)$_GET['mensaje']) : '';
 $errorFlash = isset($_GET['error']) ? trim((string)$_GET['error']) : '';
-$canManageNews = in_array($nivelUsuario, [1, 3], true);
+$canUploadBanner = in_array($nivelUsuario, [1, 2], true);
+$canPublishNews = in_array($nivelUsuario, [1, 3], true);
 $canGrantPermissions = ($nivelUsuario === 1);
-$canAccessManageBanners = ($nivelUsuario === 1);
-$canAccessManageNews = ($nivelUsuario === 1);
+$canManageBanners = ($nivelUsuario === 1);
+$canManageNews = ($nivelUsuario === 1);
 
 require_once __DIR__ . '/../includes/repositories/PermissionRepository.php';
 
@@ -42,8 +43,8 @@ $permissionConnection = null;
 try {
     $permissionConnection = new MySQLcn();
     $permissionRepository = new PermissionRepository($permissionConnection);
-    $canAccessManageBanners = $permissionRepository->userCanManageBanners($usuarioId);
-    $canAccessManageNews = $permissionRepository->userCanManageNews($usuarioId);
+    $canManageBanners = $permissionRepository->userCanManageBanners($usuarioId);
+    $canManageNews = $permissionRepository->userCanManageNews($usuarioId);
 } catch (Throwable $exception) {
     $permissionRepository = null;
 }
@@ -66,106 +67,31 @@ if ($permissionConnection !== null) {
     <link rel="stylesheet" href="css/dashboard-theme.css">
 </head>
 <body class="dashboard-body">
-    <!-- Barra de navegación -->
-    <nav class="navbar navbar-expand-lg dashboard-navbar">
-        <div class="container">
-            <a class="navbar-brand" href="#">Panel de Control</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="user.php">Subir banner</a>
-                    </li>
-                    <li class="nav-item">
-                        <?php if ($canManageNews): ?>
-                            <a class="nav-link" href="news.php">Publicar noticia</a>
-                        <?php else: ?>
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Publicar noticia</a>
-                        <?php endif; ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php if ($canAccessManageBanners): ?>
-                            <a class="nav-link" href="manage_banners.php">Gestionar banners</a>
-                        <?php else: ?>
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar banners</a>
-                        <?php endif; ?>
-                    </li>
-                    <li class="nav-item">
-                        <?php if ($canAccessManageNews): ?>
-                            <a class="nav-link" href="manage_news.php">Gestionar noticias</a>
-                        <?php else: ?>
-                            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Gestionar noticias</a>
-                        <?php endif; ?>
-                    </li>
-
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <span class="user-info">
-                            <i class="fas fa-user me-2"></i><?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-cog me-2"></i>Opciones
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="../index.php">
-                                    <i class="fas fa-home me-2"></i>Página Principal
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="cambiar_password.php">
-                                    <i class="fas fa-key me-2"></i>Cambiar Contraseña
-                                </a>
-                            </li>
-                        <?php if ($nivelUsuario === 1): ?>
-                            <li>
-                                <a class="dropdown-item" href="permissions.php">
-                                    <i class="fas fa-user-shield me-2"></i>Otorgar permisos
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="visit_logs.php">
-                                    <i class="fas fa-chart-bar me-2"></i>Registro de visitas
-                                </a>
-                            </li>
-                        <?php endif; ?>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="logout.php">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<div class="dashboard-shell">
+    <?php
+    $activeSidebar = 'upload_banner';
+    require __DIR__ . '/includes/dashboard_sidebar.php';
+    ?>
 
     <main class="dashboard-main">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <?php if ($mensajeFlash !== ''): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <?php echo htmlspecialchars($mensajeFlash, ENT_QUOTES, 'UTF-8'); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <?php endif; ?>
-                <?php if ($errorFlash !== ''): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <?php echo htmlspecialchars($errorFlash, ENT_QUOTES, 'UTF-8'); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                <?php endif; ?>
-                <div class="card dashboard-card">
+        <div class="dashboard-main-inner">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <?php if ($mensajeFlash !== ''): ?>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <?php echo htmlspecialchars($mensajeFlash, ENT_QUOTES, 'UTF-8'); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($errorFlash !== ''): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <?php echo htmlspecialchars($errorFlash, ENT_QUOTES, 'UTF-8'); ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
+                    <div class="card dashboard-card">
                     <div class="card-header">
                         <h4 class="mb-0">Subir Nueva Imagen</h4>
                     </div>
@@ -216,6 +142,7 @@ if ($permissionConnection !== null) {
         </div>
     </div>
     </main>
+</div>
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
